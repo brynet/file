@@ -127,7 +127,6 @@ static const struct sock_filter preauth_insns[] = {
 	SC_ALLOW(exit_group),
 	SC_ALLOW(fstat),
 	SC_ALLOW(getpid),
-	SC_ALLOW(kill),
 	SC_ALLOW(mmap),
 	SC_ALLOW(munmap),
 	SC_ALLOW(read),
@@ -203,18 +202,19 @@ sandbox_child(const char *user)
 			err(1, "setresgid");
 		if (setresuid(pw->pw_uid, pw->pw_uid, pw->pw_uid) != 0)
 			err(1, "setresuid");
-#ifdef __linux
-		sandbox_child_debugging();
-		if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == -1)
-			err(1, "prctl(PR_SET_NO_NEW_PRIVS)");
-		if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
-		    &preauth_program) == -1)
-			err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
-#endif
 	}
 
+#ifdef __linux
+	sandbox_child_debugging();
+	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == -1)
+		err(1, "prctl(PR_SET_NO_NEW_PRIVS)");
+	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+	    &preauth_program) == -1)
+		err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
+#else
 	if (kill(getpid(), SIGSTOP) != 0)
 		err(1, "kill(SIGSTOP)");
+#endif
 	return (0);
 }
 
@@ -235,11 +235,13 @@ sandbox_fork(const char *user)
 		return (sandbox_child(user));
 	}
 
+#ifndef __linux
 	do {
 		pid = waitpid(pid, &status, WUNTRACED);
 	} while (pid == -1 && errno == EINTR);
 	if (!WIFSTOPPED(status))
 		errx(1, "child not stopped");
+#endif
 
 #ifdef __OpenBSD__
 	devfd = open("/dev/systrace", O_RDONLY);
@@ -269,9 +271,9 @@ sandbox_fork(const char *user)
 		if (ioctl(fd, STRIOCPOLICY, &policy) == -1)
 			err(1, "ioctl(STRIOCPOLICY/MODIFY)");
 	}
-#endif /* __OpenBSD__ */
-
+#elif !__linux
 	if (kill(pid, SIGCONT) != 0)
 		err(1, "kill(SIGCONT)");
+#endif /* __OpenBSD__ */
 	return (pid);
 }
