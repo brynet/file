@@ -1,0 +1,7 @@
+This is an UNOFFICIAL version of Nicholas Marriott's new privsep file(1)
+implementation for OpenBSD (..to be introduced in 5.8); portability
+changes were written by me, brynet@.
+
+Any bugs introduced in this porting effort are mine.
+
+It has been lightly tested on FreeBSD, Linux and, of course, OpenBSD.
