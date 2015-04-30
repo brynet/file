@@ -126,7 +126,6 @@ static const struct sock_filter preauth_insns[] = {
 	SC_ALLOW(close),
 	SC_ALLOW(exit_group),
 	SC_ALLOW(fstat),
-	SC_ALLOW(getpid),
 	SC_ALLOW(mmap),
 	SC_ALLOW(munmap),
 	SC_ALLOW(read),
