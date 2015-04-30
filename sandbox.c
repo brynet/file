@@ -111,8 +111,8 @@ sandbox_find(int syscallnum)
 	return (SYSTR_POLICY_KILL);
 }
 #elif __linux
-/* Syscall filtering set for preauth. */
-static const struct sock_filter preauth_insns[] = {
+/* Syscall filtering set for child. */
+static const struct sock_filter child_insns[] = {
 	/* Ensure the syscall arch convention is as expected. */
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, arch)),
@@ -135,9 +135,9 @@ static const struct sock_filter preauth_insns[] = {
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
 };
 
-static const struct sock_fprog preauth_program = {
-	.len = (unsigned short)(sizeof(preauth_insns)/sizeof(preauth_insns[0])),
-	.filter = (struct sock_filter *)preauth_insns,
+static const struct sock_fprog child_program = {
+	.len = (unsigned short)(sizeof(child_insns)/sizeof(child_insns[0])),
+	.filter = (struct sock_filter *)child_insns,
 };
 
 #ifdef SANDBOX_DEBUG
@@ -207,7 +207,7 @@ sandbox_child(const char *user)
 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == -1)
 		err(1, "prctl(PR_SET_NO_NEW_PRIVS)");
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
-	    &preauth_program) == -1)
+	    &child_program) == -1)
 		err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
 #else
 	if (kill(getpid(), SIGSTOP) != 0)
