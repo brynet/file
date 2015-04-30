@@ -23,6 +23,41 @@
 
 #ifdef __OpenBSD__
 #include <dev/systrace.h>
+#elif __linux
+#include <sys/resource.h>
+#include <sys/prctl.h>
+
+#include <linux/audit.h>
+#include <linux/filter.h>
+#include <linux/seccomp.h>
+
+#include <stddef.h> /* offsetof */
+
+/* Linux seccomp_filter sandbox */
+#define SECCOMP_FILTER_FAIL SECCOMP_RET_KILL
+
+/* Use a signal handler to emit violations when debugging */
+#ifdef SANDBOX_DEBUG
+#undef SECCOMP_FILTER_FAIL
+#define SECCOMP_FILTER_FAIL SECCOMP_RET_TRAP
+#endif
+
+/* XXX: */
+#ifndef SECCOMP_AUDIT_ARCH
+#if defined __i386__
+#define SECCOMP_AUDIT_ARCH AUDIT_ARCH_I386
+#elif defined __x86_64__ || defined __amd64__
+#define SECCOMP_AUDIT_ARCH AUDIT_ARCH_X86_64
+#endif
+#endif /* SECCOMP_AUDIT_ARCH */
+
+/* Simple helpers to avoid manual errors (but larger BPF programs). */
+#define SC_DENY(_nr, _errno) \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_ ## _nr, 0, 1), \
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ERRNO|(_errno))
+#define SC_ALLOW(_nr) \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_ ## _nr, 0, 1), \
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
 #endif
 
 #include <errno.h>
@@ -75,6 +110,71 @@ sandbox_find(int syscallnum)
 	}
 	return (SYSTR_POLICY_KILL);
 }
+#elif __linux
+/* Syscall filtering set for preauth. */
+static const struct sock_filter preauth_insns[] = {
+	/* Ensure the syscall arch convention is as expected. */
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
+		offsetof(struct seccomp_data, arch)),
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, SECCOMP_AUDIT_ARCH, 1, 0),
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
+	/* Load the syscall number for checking. */
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
+		offsetof(struct seccomp_data, nr)),
+	SC_DENY(open, EACCES),
+	SC_ALLOW(brk),
+	SC_ALLOW(close),
+	SC_ALLOW(exit_group),
+	SC_ALLOW(fstat),
+	SC_ALLOW(getpid),
+	SC_ALLOW(kill),
+	SC_ALLOW(mmap),
+	SC_ALLOW(munmap),
+	SC_ALLOW(read),
+	SC_ALLOW(recvmsg),
+	SC_ALLOW(sendmsg),
+	SC_ALLOW(write),
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
+};
+
+static const struct sock_fprog preauth_program = {
+	.len = (unsigned short)(sizeof(preauth_insns)/sizeof(preauth_insns[0])),
+	.filter = (struct sock_filter *)preauth_insns,
+};
+
+#ifdef SANDBOX_DEBUG
+static void
+sandbox_violation(int signum, siginfo_t *info, void *void_context)
+{
+	char msg[256];
+
+	snprintf(msg, sizeof(msg),
+	    "%s: unexpected system call (arch:0x%x,syscall:%d @ %p)\n",
+	    __func__, info->si_arch, info->si_syscall, info->si_call_addr);
+	write(STDOUT_FILENO, msg, strlen(msg));
+	_exit(1);
+}
+#endif /* SANDBOX_DEBUG */
+
+static void
+sandbox_child_debugging(void)
+{
+#ifdef SANDBOX_DEBUG
+	struct sigaction act;
+	sigset_t mask;
+
+	memset(&act, 0, sizeof(act));
+	sigemptyset(&mask);
+	sigaddset(&mask, SIGSYS);
+
+	act.sa_sigaction = &sandbox_violation;
+	act.sa_flags = SA_SIGINFO;
+	if (sigaction(SIGSYS, &act, NULL) == -1)
+		err(1, "sigaction(SIGSYS)");
+	if (sigprocmask(SIG_UNBLOCK, &mask, NULL) == -1)
+		err(1, "sigprocmask(SIGSYS)");
+#endif /* SANDBOX_DEBUG */
+}
 #endif /* __OpenBSD__ */
 
 static int
@@ -103,6 +203,14 @@ sandbox_child(const char *user)
 			err(1, "setresgid");
 		if (setresuid(pw->pw_uid, pw->pw_uid, pw->pw_uid) != 0)
 			err(1, "setresuid");
+#ifdef __linux
+		sandbox_child_debugging();
+		if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == -1)
+			err(1, "prctl(PR_SET_NO_NEW_PRIVS)");
+		if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
+		    &preauth_program) == -1)
+			err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
+#endif
 	}
 
 	if (kill(getpid(), SIGSTOP) != 0)
