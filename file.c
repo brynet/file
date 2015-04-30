@@ -162,7 +162,12 @@ main(int argc, char **argv)
 		usage();
 
 	magicfp = NULL;
+#ifdef __linux
+	/*  XXX: Linux doesn't have issetugid(2), wtf? */
+	if (geteuid() != 0) {
+#else
 	if (geteuid() != 0 && !issetugid()) {
+#endif
 		home = getenv("HOME");
 		if (home == NULL || *home == '\0') {
 			pw = getpwuid(getuid());

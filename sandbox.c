@@ -21,7 +21,9 @@
 #include <sys/syscall.h>
 #include <sys/wait.h>
 
+#ifdef __OpenBSD__
 #include <dev/systrace.h>
+#endif
 
 #include <errno.h>
 #include <fcntl.h>
@@ -33,6 +35,7 @@
 #include "magic.h"
 #include "xmalloc.h"
 
+#ifdef __OpenBSD__
 static const struct
 {
 	int syscallnum;
@@ -72,6 +75,7 @@ sandbox_find(int syscallnum)
 	}
 	return (SYSTR_POLICY_KILL);
 }
+#endif /* __OpenBSD__ */
 
 static int
 sandbox_child(const char *user)
@@ -88,8 +92,11 @@ sandbox_child(const char *user)
 
 	if (geteuid() == 0) {
 		pw = getpwnam(user);
-		if (pw == NULL)
-			errx(1, "unknown user %s", user);
+		if (pw == NULL) {
+			pw = getpwnam("nobody");
+			if (pw == NULL)
+				errx(1, "unknown user %s, or 'nobody'", user);
+		}
 		if (setgroups(1, &pw->pw_gid) != 0)
 			err(1, "setgroups");
 		if (setresgid(pw->pw_gid, pw->pw_gid, pw->pw_gid) != 0)
@@ -107,8 +114,11 @@ int
 sandbox_fork(const char *user)
 {
 	pid_t			 pid;
-	int			 status, devfd, fd, i;
+	int			 status, fd, i;
+#ifdef __OpenBSD__
+	int			 devfd;
 	struct systrace_policy	 policy;
+#endif
 
 	switch (pid = fork()) {
 	case -1:
@@ -123,6 +133,7 @@ sandbox_fork(const char *user)
 	if (!WIFSTOPPED(status))
 		errx(1, "child not stopped");
 
+#ifdef __OpenBSD__
 	devfd = open("/dev/systrace", O_RDONLY);
 	if (devfd == -1)
 		err(1, "open(\"/dev/systrace\")");
@@ -150,6 +161,7 @@ sandbox_fork(const char *user)
 		if (ioctl(fd, STRIOCPOLICY, &policy) == -1)
 			err(1, "ioctl(STRIOCPOLICY/MODIFY)");
 	}
+#endif /* __OpenBSD__ */
 
 	if (kill(pid, SIGCONT) != 0)
 		err(1, "kill(SIGCONT)");
