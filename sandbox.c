@@ -58,7 +58,7 @@
 #define SC_ALLOW(_nr) \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_ ## _nr, 0, 1), \
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
-#endif
+#endif /* __OpenBSD__ */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -209,7 +209,7 @@ sandbox_child(const char *user)
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
 	    &child_program) == -1)
 		err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
-#else
+#elif __OpenBSD__
 	if (kill(getpid(), SIGSTOP) != 0)
 		err(1, "kill(SIGSTOP)");
 #endif
@@ -233,7 +233,7 @@ sandbox_fork(const char *user)
 		return (sandbox_child(user));
 	}
 
-#ifndef __linux
+#ifdef __OpenBSD__
 	/*
 	 * Wait for the child to stop itself with SIGSTOP before assigning the
 	 * policy, before that it might still be calling syscalls the policy
@@ -244,9 +244,7 @@ sandbox_fork(const char *user)
 	} while (pid == -1 && errno == EINTR);
 	if (!WIFSTOPPED(status))
 		errx(1, "child not stopped");
-#endif
 
-#ifdef __OpenBSD__
 	devfd = open("/dev/systrace", O_RDONLY);
 	if (devfd == -1)
 		err(1, "open(\"/dev/systrace\")");
@@ -274,7 +272,7 @@ sandbox_fork(const char *user)
 		if (ioctl(fd, STRIOCPOLICY, &policy) == -1)
 			err(1, "ioctl(STRIOCPOLICY/MODIFY)");
 	}
-#elif !__linux
+
 	if (kill(pid, SIGCONT) != 0)
 		err(1, "kill(SIGCONT)");
 #endif /* __OpenBSD__ */
