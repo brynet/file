@@ -23,6 +23,8 @@
 
 #ifdef __OpenBSD__
 #include <dev/systrace.h>
+#elif __FreeBSD__
+#include <sys/capability.h>
 #elif __linux
 #include <sys/resource.h>
 #include <sys/prctl.h>
@@ -209,6 +211,9 @@ sandbox_child(const char *user)
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
 	    &child_program) == -1)
 		err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
+#elif __FreeBSD__
+	if (cap_enter() == -1)
+		err(1, "cap_enter()");
 #elif __OpenBSD__
 	if (kill(getpid(), SIGSTOP) != 0)
 		err(1, "kill(SIGSTOP)");
