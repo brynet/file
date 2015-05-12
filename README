@@ -1,7 +1,12 @@
 This is an UNOFFICIAL version of Nicholas Marriott's new privsep file(1)
 implementation for OpenBSD (..to be introduced in 5.8); portability
-changes were written by me, brynet@.
+changes were written by me, brynet@. General bug fixes should be
+reported to the OpenBSD mailing lists and tested against the
+latest CVS version.
 
-Any bugs introduced in this porting effort are mine.
+* Linux seccomp-bpf sandboxing support derivied from portable OpenSSH.
+* FreeBSD Capsicum implementation contributed by Logan Velvindron.
 
 It has been lightly tested on FreeBSD, Linux and, of course, OpenBSD.
+
+Any bugs introduced in this porting effort are mine.
