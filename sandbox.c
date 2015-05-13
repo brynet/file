@@ -26,6 +26,7 @@
 #elif __linux
 #include <sys/resource.h>
 #include <sys/prctl.h>
+#include <sys/syscall.h>
 
 #include <linux/audit.h>
 #include <linux/filter.h>
@@ -126,7 +127,15 @@ static const struct sock_filter child_insns[] = {
 	SC_ALLOW(close),
 	SC_ALLOW(exit_group),
 	SC_ALLOW(fstat),
+#ifdef SYS_fstat64
+	SC_ALLOW(fstat64),
+#endif
+#ifdef SYS_mmap
 	SC_ALLOW(mmap),
+#endif
+#ifdef SYS_mmap2
+	SC_ALLOW(mmap2),
+#endif
 	SC_ALLOW(munmap),
 	SC_ALLOW(read),
 	SC_ALLOW(recvmsg),
