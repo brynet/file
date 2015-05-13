@@ -5,7 +5,6 @@ reported to the OpenBSD mailing lists and tested against the
 latest CVS version.
 
 * Linux seccomp-bpf sandboxing support derivied from portable OpenSSH.
-* FreeBSD Capsicum implementation contributed by Logan Velvindron.
 
 It has been lightly tested on FreeBSD, Linux and, of course, OpenBSD.
 
