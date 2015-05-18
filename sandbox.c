@@ -1,4 +1,4 @@
-/* $OpenBSD: sandbox.c,v 1.4 2015/04/30 14:30:53 nicm Exp $ */
+/* $OpenBSD: sandbox.c,v 1.5 2015/05/18 11:57:52 deraadt Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
@@ -81,6 +81,8 @@ static const struct
 
 	{ SYS_close, SYSTR_POLICY_PERMIT },
 	{ SYS_exit, SYSTR_POLICY_PERMIT },
+	{ SYS_fcntl, SYSTR_POLICY_PERMIT },
+	{ SYS_fstat, SYSTR_POLICY_PERMIT },
 	{ SYS_getdtablecount, SYSTR_POLICY_PERMIT },
 	{ SYS_getentropy, SYSTR_POLICY_PERMIT },
 	{ SYS_getpid, SYSTR_POLICY_PERMIT },
@@ -192,6 +194,9 @@ sandbox_child(const char *user)
 	/*
 	 * If we don't set stream buffering explicitly, stdio calls isatty()
 	 * which means ioctl() - too nasty to let through the systrace policy.
+	 *
+	 * XXX: This is only needed by OpenBSD 5.7, later versions will
+	 *      have a new fcntl(2) backed isatty(3).
 	 */
 	setvbuf(stdout, NULL, _IOLBF, 0);
 	setvbuf(stderr, NULL, _IONBF, 0);
