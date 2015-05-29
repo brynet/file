@@ -1,4 +1,4 @@
-/* $OpenBSD: magic.h,v 1.5 2015/04/24 16:24:11 nicm Exp $ */
+/* $OpenBSD: magic.h,v 1.6 2015/05/29 14:15:41 nicm Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
@@ -52,7 +52,7 @@ void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 #endif
 
 #define MAGIC_STRING_SIZE 31
-#define MAGIC_STRENGTH_MULTIPLIER 20
+#define MAGIC_STRENGTH_MULTIPLIER 10
 
 enum magic_type {
 	MAGIC_TYPE_NONE = 0,
