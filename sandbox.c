@@ -1,4 +1,4 @@
-/* $OpenBSD: sandbox.c,v 1.7 2015/05/29 15:58:34 nicm Exp $ */
+/* $OpenBSD: sandbox.c,v 1.8 2015/06/04 22:56:33 nicm Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
@@ -267,7 +267,7 @@ sandbox_fork(const char *user)
 	close(devfd);
 
 	if (ioctl(fd, STRIOCATTACH, &pid) == -1)
-		err(1, "ioctl(STRIOCATTACH)");
+		goto out;
 
 	memset(&policy, 0, sizeof policy);
 	policy.strp_op = SYSTR_POLICY_NEW;
@@ -287,6 +287,7 @@ sandbox_fork(const char *user)
 			err(1, "ioctl(STRIOCPOLICY/MODIFY)");
 	}
 
+out:
 	if (kill(pid, SIGCONT) != 0)
 		err(1, "kill(SIGCONT)");
 #endif /* __OpenBSD__ */
