@@ -33,6 +33,7 @@
 #include <linux/seccomp.h>
 
 #include <stddef.h> /* offsetof */
+#include <grp.h> /* setgroups */
 
 /* Linux seccomp_filter sandbox */
 #define SECCOMP_FILTER_FAIL SECCOMP_RET_KILL
