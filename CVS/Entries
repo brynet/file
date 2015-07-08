@@ -6,10 +6,10 @@ D/magdir////
 /xmalloc.h/1.1/Fri Apr 24 16:24:11 2015//
 /Makefile/1.15/Mon Apr 27 14:37:27 2015//
 /file.h/1.29/Thu Apr 30 04:30:05 2015//
-/magic-load.c/1.5/Fri May 29 14:41:38 2015//
 /magic.h/1.6/Result of merge//
 /magic-test.c/1.6/Result of merge//
 /file.1/1.42/Sat May 30 12:02:14 2015//
-/file.c/1.45/Result of merge//
 /sandbox.c/1.8/Result of merge//
 /xmalloc.c/1.2/Result of merge//
+/magic-load.c/1.6/Wed Jul  8 17:54:55 2015//
+/file.c/1.46/Result of merge//
