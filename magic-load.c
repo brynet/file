@@ -1,4 +1,4 @@
-/* $OpenBSD: magic-load.c,v 1.6 2015/07/08 17:47:15 tobias Exp $ */
+/* $OpenBSD: magic-load.c,v 1.17 2015/08/11 23:17:17 nicm Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
@@ -192,6 +192,8 @@ magic_set_result(struct magic_line *ml, const char *s)
 		switch (ml->type) {
 		case MAGIC_TYPE_NONE:
 		case MAGIC_TYPE_DEFAULT:
+		case MAGIC_TYPE_BESTRING16:
+		case MAGIC_TYPE_LESTRING16:
 			return (0); /* don't use result */
 		case MAGIC_TYPE_BYTE:
 		case MAGIC_TYPE_UBYTE:
@@ -260,10 +262,6 @@ magic_set_result(struct magic_line *ml, const char *s)
 		case MAGIC_TYPE_SEARCH:
 			re = &ml->root->format_string;
 			break;
-		case MAGIC_TYPE_BESTRING16:
-		case MAGIC_TYPE_LESTRING16:
-			magic_warn(ml, "unsupported type %s", ml->type_string);
-			return (-1);
 		}
 	}
 
@@ -283,6 +281,9 @@ magic_get_strength(struct magic_line *ml)
 {
 	int	n;
 	size_t	size;
+
+	if (ml->type == MAGIC_TYPE_NONE)
+		return (0);
 
 	if (ml->test_not || ml->test_operator == 'x')
 		return (1);
@@ -540,7 +541,7 @@ magic_parse_offset(struct magic_line *ml, char **line)
 
 	endptr = magic_strtoll(s, &ml->indirect_offset);
 	if (endptr == NULL) {
-		magic_warn(ml, "can't parse offset");
+		magic_warn(ml, "can't parse offset: %s", s);
 		goto fail;
 	}
 	s = endptr;
@@ -550,7 +551,7 @@ magic_parse_offset(struct magic_line *ml, char **line)
 	if (*s == '.') {
 		s++;
 		if (*s == '\0' || strchr("bslBSL", *s) == NULL) {
-			magic_warn(ml, "unknown offset type");
+			magic_warn(ml, "unknown offset type: %c", *s);
 			goto fail;
 		}
 		ml->indirect_type = *s;
@@ -560,7 +561,7 @@ magic_parse_offset(struct magic_line *ml, char **line)
 	}
 
 	if (*s == '\0' || strchr("+-*", *s) == NULL) {
-		magic_warn(ml, "unknown offset operator");
+		magic_warn(ml, "unknown offset operator: %c", *s);
 		goto fail;
 	}
 	ml->indirect_operator = *s;
@@ -609,31 +610,55 @@ magic_parse_type(struct magic_line *ml, char **line)
 	*cp = '\0';
 
 	ml->type = MAGIC_TYPE_NONE;
-	ml->type_string = xstrdup(s);
-
 	ml->type_operator = ' ';
 	ml->type_operand = 0;
 
-	if (strncmp(s, "string", (sizeof "string") - 1) == 0) {
+	if (strncmp(s, "string", (sizeof "string") - 1) == 0 ||
+	    strncmp(s, "ustring", (sizeof "ustring") - 1) == 0) {
+		if (*s == 'u')
+			ml->type_string = xstrdup(s + 1);
+		else
+			ml->type_string = xstrdup(s);
 		ml->type = MAGIC_TYPE_STRING;
 		magic_mark_text(ml, 0);
 		goto done;
 	}
-	if (strncmp(s, "search", (sizeof "search") - 1) == 0) {
+	if (strncmp(s, "pstring", (sizeof "pstring") - 1) == 0 ||
+	    strncmp(s, "upstring", (sizeof "upstring") - 1) == 0) {
+		if (*s == 'u')
+			ml->type_string = xstrdup(s + 1);
+		else
+			ml->type_string = xstrdup(s);
+		ml->type = MAGIC_TYPE_PSTRING;
+		magic_mark_text(ml, 0);
+		goto done;
+	}
+	if (strncmp(s, "search", (sizeof "search") - 1) == 0 ||
+	    strncmp(s, "usearch", (sizeof "usearch") - 1) == 0) {
+		if (*s == 'u')
+			ml->type_string = xstrdup(s + 1);
+		else
+			ml->type_string = xstrdup(s);
 		ml->type = MAGIC_TYPE_SEARCH;
 		goto done;
 	}
-	if (strncmp(s, "regex", (sizeof "regex") - 1) == 0) {
+	if (strncmp(s, "regex", (sizeof "regex") - 1) == 0 ||
+	    strncmp(s, "uregex", (sizeof "uregex") - 1) == 0) {
+		if (*s == 'u')
+			ml->type_string = xstrdup(s + 1);
+		else
+			ml->type_string = xstrdup(s);
 		ml->type = MAGIC_TYPE_REGEX;
 		goto done;
 	}
+	ml->type_string = xstrdup(s);
 
-	cp = &s[strcspn(s, "-&")];
+	cp = &s[strcspn(s, "+-&/%*")];
 	if (*cp != '\0') {
 		ml->type_operator = *cp;
 		endptr = magic_strtoull(cp + 1, &ml->type_operand);
 		if (endptr == NULL || *endptr != '\0') {
-			magic_warn(ml, "can't parse operand");
+			magic_warn(ml, "can't parse operand: %s", cp + 1);
 			goto fail;
 		}
 		*cp = '\0';
@@ -655,12 +680,10 @@ magic_parse_type(struct magic_line *ml, char **line)
 		ml->type = MAGIC_TYPE_ULONG;
 	else if (strcmp(s, "uquad") == 0)
 		ml->type = MAGIC_TYPE_UQUAD;
-	else if (strcmp(s, "float") == 0)
+	else if (strcmp(s, "float") == 0 || strcmp(s, "ufloat") == 0)
 		ml->type = MAGIC_TYPE_FLOAT;
-	else if (strcmp(s, "double") == 0)
+	else if (strcmp(s, "double") == 0 || strcmp(s, "udouble") == 0)
 		ml->type = MAGIC_TYPE_DOUBLE;
-	else if (strcmp(s, "pstring") == 0)
-		ml->type = MAGIC_TYPE_PSTRING;
 	else if (strcmp(s, "date") == 0)
 		ml->type = MAGIC_TYPE_DATE;
 	else if (strcmp(s, "qdate") == 0)
@@ -689,9 +712,9 @@ magic_parse_type(struct magic_line *ml, char **line)
 		ml->type = MAGIC_TYPE_UBELONG;
 	else if (strcmp(s, "ubequad") == 0)
 		ml->type = MAGIC_TYPE_UBEQUAD;
-	else if (strcmp(s, "befloat") == 0)
+	else if (strcmp(s, "befloat") == 0 || strcmp(s, "ubefloat") == 0)
 		ml->type = MAGIC_TYPE_BEFLOAT;
-	else if (strcmp(s, "bedouble") == 0)
+	else if (strcmp(s, "bedouble") == 0 || strcmp(s, "ubedouble") == 0)
 		ml->type = MAGIC_TYPE_BEDOUBLE;
 	else if (strcmp(s, "bedate") == 0)
 		ml->type = MAGIC_TYPE_BEDATE;
@@ -709,7 +732,7 @@ magic_parse_type(struct magic_line *ml, char **line)
 		ml->type = MAGIC_TYPE_UBELDATE;
 	else if (strcmp(s, "ubeqldate") == 0)
 		ml->type = MAGIC_TYPE_UBEQLDATE;
-	else if (strcmp(s, "bestring16") == 0)
+	else if (strcmp(s, "bestring16") == 0 || strcmp(s, "ubestring16") == 0)
 		ml->type = MAGIC_TYPE_BESTRING16;
 	else if (strcmp(s, "leshort") == 0)
 		ml->type = MAGIC_TYPE_LESHORT;
@@ -723,9 +746,9 @@ magic_parse_type(struct magic_line *ml, char **line)
 		ml->type = MAGIC_TYPE_ULELONG;
 	else if (strcmp(s, "ulequad") == 0)
 		ml->type = MAGIC_TYPE_ULEQUAD;
-	else if (strcmp(s, "lefloat") == 0)
+	else if (strcmp(s, "lefloat") == 0 || strcmp(s, "ulefloat") == 0)
 		ml->type = MAGIC_TYPE_LEFLOAT;
-	else if (strcmp(s, "ledouble") == 0)
+	else if (strcmp(s, "ledouble") == 0 || strcmp(s, "uledouble") == 0)
 		ml->type = MAGIC_TYPE_LEDOUBLE;
 	else if (strcmp(s, "ledate") == 0)
 		ml->type = MAGIC_TYPE_LEDATE;
@@ -743,18 +766,18 @@ magic_parse_type(struct magic_line *ml, char **line)
 		ml->type = MAGIC_TYPE_ULELDATE;
 	else if (strcmp(s, "uleqldate") == 0)
 		ml->type = MAGIC_TYPE_ULEQLDATE;
-	else if (strcmp(s, "lestring16") == 0)
+	else if (strcmp(s, "lestring16") == 0 || strcmp(s, "ulestring16") == 0)
 		ml->type = MAGIC_TYPE_LESTRING16;
-	else if (strcmp(s, "melong") == 0)
+	else if (strcmp(s, "melong") == 0 || strcmp(s, "umelong") == 0)
 		ml->type = MAGIC_TYPE_MELONG;
-	else if (strcmp(s, "medate") == 0)
+	else if (strcmp(s, "medate") == 0 || strcmp(s, "umedate") == 0)
 		ml->type = MAGIC_TYPE_MEDATE;
-	else if (strcmp(s, "meldate") == 0)
+	else if (strcmp(s, "meldate") == 0 || strcmp(s, "umeldate") == 0)
 		ml->type = MAGIC_TYPE_MELDATE;
-	else if (strcmp(s, "default") == 0)
+	else if (strcmp(s, "default") == 0 || strcmp(s, "udefault") == 0)
 		ml->type = MAGIC_TYPE_DEFAULT;
 	else {
-		magic_warn(ml, "unknown type");
+		magic_warn(ml, "unknown type: %s", s);
 		goto fail;
 	}
 	magic_mark_text(ml, 0);
@@ -773,6 +796,7 @@ magic_parse_value(struct magic_line *ml, char **line)
 {
 	char	*copy, *s, *cp, *endptr;
 	size_t	 slen;
+	uint64_t u;
 
 	while (isspace((u_char)**line))
 		(*line)++;
@@ -783,6 +807,9 @@ magic_parse_value(struct magic_line *ml, char **line)
 	ml->test_string_size = 0;
 	ml->test_unsigned = 0;
 	ml->test_signed = 0;
+
+	if (**line == '\0')
+		return (0);
 
 	s = *line;
 	if (s[0] == 'x' && (s[1] == '\0' || isspace((u_char)s[1]))) {
@@ -818,60 +845,66 @@ magic_parse_value(struct magic_line *ml, char **line)
 		break;
 	}
 
-	copy = s = cp = xmalloc(strlen(*line) + 1);
-	if ((*line)[0] == '=' && (*line)[1] == ' ') {
-		/*
-		 * Extra spaces such as "byte&7 = 0" are accepted, which is
-		 * annoying. But it seems to be only for =, so special case it.
-		 */
-		*cp++ = '=';
+	while (isspace((u_char)**line))
+		(*line)++;
+	if ((*line)[0] == '<' && (*line)[1] == '=') {
+		ml->test_operator = '[';
 		(*line) += 2;
+	} else if ((*line)[0] == '>' && (*line)[1] == '=') {
+		ml->test_operator = ']';
+		(*line) += 2;
+	} else if (strchr("=<>&^", **line) != NULL) {
+		ml->test_operator = **line;
+		(*line)++;
 	}
+
+	while (isspace((u_char)**line))
+		(*line)++;
+	copy = cp = xmalloc(strlen(*line) + 1);
 	while (**line != '\0' && !isspace((u_char)**line))
 		*cp++ = *(*line)++;
 	*cp = '\0';
 
-	if (*s == '\0')
-		goto done;
-
-	if (s[0] == '<' && s[1] == '=') {
-		ml->test_operator = '[';
-		s += 2;
-	} else if (s[0] == '>' && s[1] == '=') {
-		ml->test_operator = ']';
-		s += 2;
-	} else if (strchr("=<>&^", *s) != NULL) {
-		ml->test_operator = *s;
-		s++;
+	switch (ml->type) {
+	case MAGIC_TYPE_FLOAT:
+	case MAGIC_TYPE_DOUBLE:
+	case MAGIC_TYPE_BEFLOAT:
+	case MAGIC_TYPE_BEDOUBLE:
+	case MAGIC_TYPE_LEFLOAT:
+	case MAGIC_TYPE_LEDOUBLE:
+		errno = 0;
+		ml->test_double = strtod(copy, &endptr);
+		if (errno == ERANGE)
+			endptr = NULL;
+		break;
+	default:
+		if (*ml->type_string == 'u')
+			endptr = magic_strtoull(copy, &ml->test_unsigned);
+		else {
+			endptr = magic_strtoll(copy, &ml->test_signed);
+			if (endptr == NULL || *endptr != '\0') {
+				/*
+				 * If we can't parse this as a signed number,
+				 * try as unsigned instead.
+				 */
+				endptr = magic_strtoull(copy, &u);
+				if (endptr != NULL && *endptr == '\0')
+					ml->test_signed = (int64_t)u;
+			}
+		}
+		break;
 	}
-
-	if (*ml->type_string == 'u')
-		endptr = magic_strtoull(s, &ml->test_unsigned);
-	else
-		endptr = magic_strtoll(s, &ml->test_signed);
 	if (endptr == NULL || *endptr != '\0') {
-		magic_warn(ml, "can't parse number");
+		magic_warn(ml, "can't parse number: %s", copy);
 		goto fail;
 	}
 
-done:
 	free(copy);
 	return (0);
 
 fail:
 	free(copy);
 	return (-1);
-}
-
-static void
-magic_free_line(struct magic_line *ml)
-{
-	free((void *)ml->type_string);
-
-	free((void *)ml->mimetype);
-	free((void *)ml->result);
-
-	free(ml);
 }
 
 int
@@ -922,17 +955,11 @@ magic_set_mimetype(struct magic *m, u_int at, struct magic_line *ml, char *line)
 		cp++;
 	}
 	if (*mimetype == '\0' || *cp != '\0') {
-		if (m->warnings) {
-			fprintf(stderr, "%s:%u: invalid MIME type: %s\n",
-			    m->path, at, mimetype);
-		}
+		magic_warnm(m, at, "invalid MIME type: %s", mimetype);
 		return;
 	}
 	if (ml == NULL) {
-		if (m->warnings) {
-			fprintf(stderr, "%s:%u: stray MIME type: %s\n",
-			    m->path, at, mimetype);
-		}
+		magic_warnm(m, at, "stray MIME type: %s", mimetype);
 		return;
 	}
 	ml->mimetype = xstrdup(mimetype);
@@ -974,8 +1001,16 @@ magic_load(FILE *f, const char *path, int warnings)
 		if (*line == '\0' || *line == '#')
 			continue;
 
-		if (strncmp (line, "!:mime", (sizeof "!:mime") - 1) == 0) {
+		if (strncmp (line, "!:mime", 6) == 0) {
 			magic_set_mimetype(m, at, ml, line);
+			continue;
+		}
+		if (strncmp (line, "!:", 2) == 0) {
+			for (i = 0; i < 64 && line[i] != '\0'; i++) {
+				if (isspace((u_char)line[i]))
+					break;
+			}
+			magic_warnm(m, at, "%.*s not supported", i, line);
 			continue;
 		}
 
@@ -990,6 +1025,11 @@ magic_load(FILE *f, const char *path, int warnings)
 		TAILQ_INIT(&ml->children);
 		ml->text = 1;
 
+		/*
+		 * At this point n is the level we want, level is the current
+		 * level. parent0 is the last line at the same level and parent
+		 * is the last line at the previous level.
+		 */
 		if (n == level + 1) {
 			parent = parent0;
 		} else if (n < level) {
@@ -1007,9 +1047,11 @@ magic_load(FILE *f, const char *path, int warnings)
 		    magic_parse_type(ml, &line) != 0 ||
 		    magic_parse_value(ml, &line) != 0 ||
 		    magic_set_result(ml, line) != 0) {
-			magic_free_line(ml);
-			ml = NULL;
-			continue;
+			/*
+			 * An invalid line still needs to appear in the tree in
+			 * case it has any children.
+			 */
+			ml->type = MAGIC_TYPE_NONE;
 		}
 
 		ml->strength = magic_get_strength(ml);
