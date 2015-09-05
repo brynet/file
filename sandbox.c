@@ -159,12 +159,9 @@ static const struct sock_fprog child_program = {
 static void
 sandbox_violation(int signum, siginfo_t *info, void *void_context)
 {
-	char msg[256];
-
-	snprintf(msg, sizeof(msg),
+	dprintf(STDOUT_FILENO,
 	    "%s: unexpected system call (arch:0x%x,syscall:%d @ %p)\n",
 	    __func__, info->si_arch, info->si_syscall, info->si_call_addr);
-	write(STDOUT_FILENO, msg, strlen(msg));
 	_exit(1);
 }
 #endif /* SANDBOX_DEBUG */
