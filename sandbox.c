@@ -136,6 +136,12 @@ static const struct sock_filter child_insns[] = {
 #ifdef SYS_fstat64
 	SC_ALLOW(fstat64),
 #endif
+#ifdef SYS_lseek
+	SC_ALLOW(lseek),
+#endif
+#ifdef SYS__llseek
+	SC_ALLOW(_llseek),
+#endif
 #ifdef SYS_mmap
 	SC_ALLOW(mmap),
 #endif
