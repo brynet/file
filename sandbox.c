@@ -198,16 +198,6 @@ sandbox_child(const char *user)
 {
 	struct passwd	*pw;
 
-	/*
-	 * If we don't set stream buffering explicitly, stdio calls isatty()
-	 * which means ioctl() - too nasty to let through the systrace policy.
-	 *
-	 * XXX: This is only needed by OpenBSD 5.7, later versions will
-	 *      have a new fcntl(2) backed isatty(3).
-	 */
-	setvbuf(stdout, NULL, _IOLBF, 0);
-	setvbuf(stderr, NULL, _IONBF, 0);
-
 	if (geteuid() == 0) {
 		pw = getpwnam(user);
 		if (pw == NULL) {
