@@ -6,6 +6,6 @@ latest CVS version.
 
 * Linux seccomp-bpf sandboxing support derivied from portable OpenSSH.
 
-It has been lightly tested on FreeBSD, Linux and, of course, OpenBSD.
+It has been lightly tested on FreeBSD, Linux and, of course, OpenBSD (tame).
 
 Any bugs introduced in this porting effort are mine.
