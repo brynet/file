@@ -4,7 +4,7 @@ changes were written by me, brynet@. General bug fixes should be
 reported to the OpenBSD mailing lists and tested against the
 latest CVS version.
 
-* Linux seccomp-bpf sandboxing support derivied from portable OpenSSH.
+* Linux seccomp-bpf sandbox support derived from portable OpenSSH.
 
 It has been lightly tested on FreeBSD, Linux and, of course, OpenBSD (tame).
 
