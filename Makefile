@@ -3,7 +3,8 @@
 PROG=   file
 SRCS=	file.c magic-dump.c magic-load.c magic-test.c magic-common.c \
 	text.c xmalloc.c compat/reallocarray.c compat/vis.c compat/fgetln.c \
-	compat/strlcpy.c compat/strlcat.c compat/imsg-buffer.c compat/imsg.c
+	compat/strlcpy.c compat/strlcat.c compat/imsg-buffer.c compat/imsg.c \
+	seccomp-sandbox.c
 OBJS=	$(patsubst %.c,%.o,$(SRCS))
 MAN=	file.1 magic.5
 

@@ -197,7 +197,11 @@ main(int argc, char **argv)
 	parent = getpid();
 	if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, pair) != 0)
 		err(1, "socketpair");
+#ifdef __linux
+	switch (pid = sandbox_fork()) {
+#else
 	switch (pid = fork()) {
+#endif
 	case -1:
 		err(1, "fork");
 	case 0:
@@ -356,13 +360,23 @@ child(int fd, pid_t parent, int argc, char **argv)
 	int			 i, idx;
 	size_t			 len, width = 0;
 
+#ifdef __OpenBSD__
 	if (tame("stdio cmsg getpw proc", NULL) != 0)
 		err(1, "tame");
+#endif
 
 	if (geteuid() == 0) {
 		pw = getpwnam(FILE_USER);
+#ifdef __OpenBSD__
 		if (pw == NULL)
 			errx(1, "unknown user %s", FILE_USER);
+#else
+		if (pw == NULL) {
+			pw = getpwnam("nobody");
+			if (pw == NULL)
+				errx(1, "unknown user %s or nobody", FILE_USER);
+		}
+#endif
 		if (setgroups(1, &pw->pw_gid) != 0)
 			err(1, "setgroups");
 		if (setresgid(pw->pw_gid, pw->pw_gid, pw->pw_gid) != 0)
@@ -371,8 +385,10 @@ child(int fd, pid_t parent, int argc, char **argv)
 			err(1, "setresuid");
 	}
 
+#ifdef __OpenBSD__
 	if (tame("stdio cmsg", NULL) != 0)
 		err(1, "tame");
+#endif
 
 	m = magic_load(magicfp, magicpath, cflag || Wflag);
 	if (cflag) {

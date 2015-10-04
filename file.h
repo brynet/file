@@ -25,8 +25,8 @@
 /* User to drop privileges to in child process. */
 #define FILE_USER "_file"
 
-/* sandbox.c */
-int		 sandbox_fork(const char *);
+/* seccomp-sandbox.c */
+int		 sandbox_fork(void);
 
 /* text.c */
 const char	*text_get_type(const void *, size_t);
