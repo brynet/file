@@ -1,4 +1,4 @@
-/* $OpenBSD: magic.h,v 1.9 2015/10/02 18:06:27 deraadt Exp $ */
+/* $OpenBSD: magic.h,v 1.11 2015/10/05 20:05:52 nicm Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
@@ -127,6 +127,9 @@ struct magic_line {
 	u_int			 strength;
 	struct magic_line	*parent;
 
+	char			 strength_operator;
+	u_int			 strength_value;
+
 	int			 text;
 
 	int64_t			 offset;
@@ -181,7 +184,7 @@ struct magic_state {
 
 	const char		*base;
 	size_t			 size;
-	int64_t			 offset;
+	size_t			 offset;
 };
 
 #define MAGIC_TEST_TEXT 0x1
