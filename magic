@@ -2465,7 +2465,7 @@
 >29	byte		0x32			Spreadsheet
 >29	byte		0x38			Macro
 
-#	$OpenBSD: att3b,v 1.2 2004/06/03 03:14:19 tedu Exp $
+#	$OpenBSD: att3b,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # att3b:  file(1) magic for AT&T 3B machines
@@ -2478,10 +2478,10 @@
 # The 3B20 conflicts with SCCS.
 #0	beshort		0550		3b20 COFF executable
 #>12	belong		>0		not stripped
-#>22	beshort		>0		- version %ld
+#>22	beshort		>0		- version %d
 #0	beshort		0551		3b20 COFF executable (TV)
 #>12	belong		>0		not stripped
-#>22	beshort		>0		- version %ld
+#>22	beshort		>0		- version %d
 #
 # WE32K
 #
@@ -2496,12 +2496,12 @@
 >20	beshort		0410		(pure)
 >20	beshort		0413		(demand paged)
 >20	beshort		0443		(target shared library)
->22	beshort		>0		- version %ld
+>22	beshort		>0		- version %d
 0	beshort		0561		WE32000 COFF executable (TV)
 >12	belong		>0		not stripped
 #>18	beshort		&00020000	- 32100 required
 #>18	beshort		&00040000	and MAU hardware required
-#>22	beshort		>0		- version %ld
+#>22	beshort		>0		- version %d
 #
 # core file for 3b2 
 0	string		\000\004\036\212\200	3b2 core file
@@ -3161,7 +3161,7 @@
 >7	string		\006			mkeyed file
 >>13	short		0			(sort)
 >>8	string		\000			(mkey)
-#	$OpenBSD: bflt,v 1.2 2008/05/14 20:45:35 chl Exp $
+#	$OpenBSD: bflt,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # bFLT: file(1) magic for BFLT uclinux binary files
@@ -3169,13 +3169,13 @@
 # From Philippe De Muyter <phdm@macqel.be>
 #
 0	string		bFLT		BFLT executable
->4	belong		x		- version %ld
+>4	belong		x		- version %d
 >4	belong		4
 >>36	belong&0x1	0x1		ram
 >>36	belong&0x2	0x2		gotpic
 >>36	belong&0x4	0x4		gzip
 >>36	belong&0x8	0x8		gzdata
-#	$OpenBSD: blender,v 1.2 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: blender,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # blender: file(1) magic for Blender 3D related files
@@ -3212,7 +3212,7 @@
 >>>0x44		string	=GLOB		\b.
 >>>>0x60	beshort	x		\b%.4d
 
-# Scripts that run in the embeded Python interpreter
+# Scripts that run in the embedded Python interpreter
 0		string	#!BPY		Blender3D BPython script
 #	$OpenBSD: blit,v 1.2 2004/06/03 03:14:19 tedu Exp $
 
@@ -3234,9 +3234,9 @@
 # Need more values for WE32 DMD executables.
 # Note that 0520 is the same as COFF
 #0	short		0520		tty630 layers executable
-#	$OpenBSD: bout,v 1.3 2008/05/08 01:40:57 chl Exp $
+#	$OpenBSD: bout,v 1.4 2015/10/05 22:48:26 nicm Exp $
 
-#
+#------------------------------------------------------------------------------
 # i80960 b.out objects and archives
 #
 0	long		0x10d		i960 b.out relocatable object
@@ -3470,7 +3470,7 @@
 >>>4	belong		<20		Mach-O fat file with %ld architectures
 >2	beshort		0xd00d		JAR compressed with pack200
 !:mime	application/x-java-pack200
-#	$OpenBSD: cddb,v 1.2 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: cddb,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # CDDB: file(1) magic for CDDB(tm) format CD text data files
@@ -3481,7 +3481,7 @@
 # CDDB-enabled CD player applications.
 #
 
-0	search/1/b	#\040xmcd	CDDB(tm) format CD text data
+0	search/1/w	#\040xmcd	CDDB(tm) format CD text data
 #	$OpenBSD: chord,v 1.1 2004/06/03 03:14:19 tedu Exp $
 
 #------------------------------------------------------------------------------
@@ -3512,7 +3512,7 @@
 
 0	string		RuneCT		Citrus locale declaration for LC_CTYPE
 
-#	$OpenBSD: clarion,v 1.2 2009/04/26 14:17:45 chl Exp $
+#	$OpenBSD: clarion,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # clarion:  file(1) magic for # Clarion Personal/Professional Developer
@@ -3529,7 +3529,7 @@
 >2	leshort	&0x0010	\b, compressed
 >2	leshort	&0x0040	\b, read only
 # number of records
->5	lelong	x	\b, %ld records
+>5	lelong	x	\b, %d records
 
 # Memo files
 0	leshort	0x334d	Clarion Developer (v2 and above) memo data
@@ -3586,7 +3586,7 @@
 #./windows/claris/clworks.lbl: data
 #./windows/claris/clworks.prf: data
 #./windows/claris/userd.spl: data
-#	$OpenBSD: clipper,v 1.2 2004/06/03 03:14:19 tedu Exp $
+#	$OpenBSD: clipper,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # clipper:  file(1) magic for Intergraph (formerly Fairchild) Clipper.
@@ -3623,7 +3623,7 @@
 >20	short		0413		(demand paged)
 >20	short		0443		(target shared library)
 >12	long		>0		not stripped
->22	short		>0		- version %ld
+>22	short		>0		- version %d
 0	short		0577		CLIPPER COFF executable
 >18	short&074000	000000		C1 R1 
 >18	short&074000	004000		C2 R1
@@ -3635,7 +3635,7 @@
 >20	short		0413		(paged)
 >20	short		0443		(target shared library)
 >12	long		>0		not stripped
->22	short		>0		- version %ld
+>22	short		>0		- version %d
 >48	long&01		01		alignment trap enabled
 >52	byte		1		-Ctnc
 >52	byte		2		-Ctsw
@@ -3752,7 +3752,7 @@
 0	string		mscdocument	Message Sequence Chart (document)
 0	string		msc		Message Sequence Chart (chart)
 0	string		submsc		Message Sequence Chart (subchart)
-#	$OpenBSD: compress,v 1.6 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: compress,v 1.7 2015/10/05 22:36:23 nicm Exp $
 
 #------------------------------------------------------------------------------
 # compress:  file(1) magic for pure-compression formats (no archives)
@@ -3764,8 +3764,9 @@
 # because it tries to uncompress it to figure out what's inside.
 
 # standard unix compress
-#0	string		\037\235	compress'd data
-#!:mime	application/x-compress
+0	string		\037\235	compress'd data
+!:mime	application/x-compress
+!:apple	LZIVZIVU
 >2	byte&0x80	>0		block compressed
 >2	byte&0x1f	x		%d bits
 
@@ -3773,9 +3774,10 @@
 #   Edited by Chris Chittleborough <cchittleborough@yahoo.com.au>, March 2002
 #	* Original filename is only at offset 10 if "extra field" absent
 #	* Produce shorter output - notably, only report compression methods
-#	  other than 8 ("deflate", the only method defined in RFC 1952).
+#         other than 8 ("deflate", the only method defined in RFC 1952).
 0       string          \037\213        gzip compressed data
 !:mime	application/x-gzip
+!:strength * 2
 >2	byte		<8		\b, reserved method
 >2	byte		>8		\b, unknown method
 >3	byte		&0x01		\b, ASCII
@@ -3784,6 +3786,10 @@
 >3	byte&0xC	=0x08
 >>10	string		x		\b, was "%s"
 >3	byte		&0x10		\b, has comment
+>3	byte		&0x20		\b, encrypted
+>4	ledate		>0		\b, last modified: %s
+>8	byte		2		\b, max compression
+>8	byte		4		\b, max speed
 >9	byte		=0x00		\b, from FAT filesystem (MS-DOS, OS/2, NT)
 >9	byte		=0x01		\b, from Amiga
 >9	byte		=0x02		\b, from VMS
@@ -3798,11 +3804,6 @@
 >9	byte		=0x0B		\b, from NTFS filesystem (NT)
 >9	byte		=0x0C		\b, from QDOS
 >9	byte		=0x0D		\b, from Acorn RISCOS
->3	byte		&0x10		\b, comment
->3	byte		&0x20		\b, encrypted
->4	ledate		>0		\b, last modified: %s
->8	byte		2		\b, max compression
->8	byte		4		\b, max speed
 
 # packed data, Huffman (minimum redundancy) codes on a byte-by-byte basis
 0	string		\037\036	packed data
@@ -3830,6 +3831,11 @@
 0	string		BZh		bzip2 compressed data
 !:mime	application/x-bzip2
 >3	byte		>47		\b, block size = %c00k
+
+# lzip
+0	string		LZIP		lzip compressed data
+!:mime application/x-lzip
+>4	byte		x		\b, version: %d
 
 # squeeze and crunch
 # Michael Haardt <michael@cantor.informatik.rwth-aachen.de>
@@ -3931,18 +3937,42 @@
 >4	belong		0x090A0C0D	best compression
 
 # 7-zip archiver, from Thomas Klausner (wiz@danbala.tuwien.ac.at)
-# http://www.7-zip.org or DOC/7zFormat.txt 
+# http://www.7-zip.org or DOC/7zFormat.txt
 #
 0	string		7z\274\257\047\034	7-zip archive data,
 >6	byte		x			version %d
 >7	byte		x			\b.%d
+!:mime	application/x-7z-compressed
 
 # Type: LZMA
-# URL:  http://www.7-zip.org/sdk.html
-# From: Robert Millan <rmh@aybabtu.com> and Reuben Thomas <rrt@sc3d.org>
-# Commented out because apparently not reliable (according to Debian
-# bug #364260)
-#0	string		]\000\000\200\000	LZMA compressed data
+0	lelong&0xffffff	=0x5d
+>12	leshort		0xff			LZMA compressed data,
+!:mime	application/x-lzma
+>>5	lequad		=0xffffffffffffffff	streamed
+>>5	lequad		!0xffffffffffffffff	non-streamed, size %lld
+>12	leshort		0			LZMA compressed data,
+>>5	lequad		=0xffffffffffffffff	streamed
+>>5	lequad		!0xffffffffffffffff	non-streamed, size %lld
+
+# http://tukaani.org/xz/xz-file-format.txt
+0	ustring		\xFD7zXZ\x00		XZ compressed data
+!:strength * 2
+!:mime	application/x-xz
+
+# https://github.com/ckolivas/lrzip/blob/master/doc/magic.header.txt
+0	string		LRZI			LRZIP compressed data
+>4	byte		x			- version %d
+>5	byte		x			\b.%d
+!:mime	application/x-lrzip
+
+# http://fastcompression.blogspot.fi/2013/04/lz4-streaming-format-final.html
+0	lelong		0x184d2204	LZ4 compressed data (v1.4+)
+!:mime	application/x-lz4
+# Added by osm0sis@xda-developers.com
+0 	lelong		0x184c2103	LZ4 compressed data (v1.0-v1.3)
+!:mime	application/x-lz4
+0	lelong		0x184c2102	LZ4 compressed data (v0.1-v0.9)
+!:mime	application/x-lz4
 
 # AFX compressed files (Wolfram Kleff)
 2	string		-afx-		AFX compressed file data
@@ -3957,6 +3987,37 @@
 >4	byte		x		- version %d
 >5	byte		x		\b.%d
 >6	belong		x		(%d bytes)
+
+0	string		ArC\x01		FreeArc archive <http://freearc.org>
+
+# Type:	DACT compressed files
+0	long	0x444354C3	DACT compressed data
+>4	byte	>-1		(version %i.
+>5	byte	>-1		%i.
+>6	byte	>-1		%i)
+>7	long	>0		, original size: %i bytes
+>15	long	>30		, block size: %i bytes
+
+# Valve Pack (VPK) files
+0	lelong	0x55aa1234	Valve Pak file
+>0x4	lelong	x		\b, version %u
+>0x8	lelong	x		\b, %u entries
+
+# Snappy framing format
+# http://code.google.com/p/snappy/source/browse/trunk/framing_format.txt
+0	string	\377\006\0\0sNaPpY	snappy framed data
+!:mime	application/x-snappy-framed
+
+# qpress, http://www.quicklz.com/
+0	string	qpress10	qpress compressed data
+!:mime	application/x-qpress
+
+# Zlib https://www.ietf.org/rfc/rfc6713.txt
+0	string/b	x
+>0	beshort%31	=0	
+>>0	byte&0xf	=8
+>>>0	byte&0x80 	=0	zlib compressed data
+!:mime	application/zlib
 #	$OpenBSD: console,v 1.3 2009/04/24 18:54:34 chl Exp $
 
 #------------------------------------------------------------------------------
@@ -4848,7 +4909,7 @@
 # by Sven Wegener <swegener@gentoo.org>
 0	string	b0VIM\ 		Vim swap file
 >&0	string	>\0		\b, version %s
-#	$OpenBSD: efi,v 1.2 2009/04/26 14:17:45 chl Exp $
+#	$OpenBSD: efi,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # efi:  file(1) magic for Universal EFI binaries
@@ -4862,7 +4923,7 @@
 >>&0	lelong	0x01000007	\b, x86_64
 >>&20	lelong	7		\b, i386
 >>&20	lelong	0x01000007	\b, x86_64
->4	lelong	>2		Universal EFI binary with %ld architectures
+>4	lelong	>2		Universal EFI binary with %d architectures
 #	$OpenBSD: elf,v 1.17 2009/04/24 18:54:34 chl Exp $
 
 #------------------------------------------------------------------------------
@@ -5118,7 +5179,7 @@
 >>20	belong		0		invalid version
 >>20	belong		1		version 1
 >>36	belong		1		MathCoPro/FPU/MAU Required
-#	$OpenBSD: encore,v 1.2 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: encore,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # encore:  file(1) magic for Encore machines
@@ -5132,12 +5193,12 @@
 >20	short		0x10b		demand-paged executable
 >20	short		0x10f		unsupported executable
 >12	long		>0		not stripped
->22	short		>0		- version %ld
+>22	short		>0		- version %d
 >22	short		0		-
 #>4	date		x		stamp %s
 0	short		0x155		Encore unsupported executable
 >12	long		>0		not stripped
->22	short		>0		- version %ld
+>22	short		>0		- version %d
 >22	short		0		-
 #>4	date		x		stamp %s
 #	$OpenBSD: epoc,v 1.1 2004/06/03 03:14:20 tedu Exp $
@@ -7683,7 +7744,7 @@
 #>8		string	>\0		(version %s)
 #>4		string	LZX		R executable
 #2		string	#HUPAIR		Human68k hupair R executable
-#	$OpenBSD: ibm370,v 1.4 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: ibm370,v 1.5 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # ibm370:  file(1) magic for IBM 370 and compatibles.
@@ -7721,16 +7782,16 @@
 >12	belong		>0		not stripped
 0       beshort		0531		SVR2 executable (Amdahl-UTS)
 >12	belong		>0		not stripped
->24     belong		>0		- version %ld
+>24     belong		>0		- version %d
 0	beshort		0534		SVR2 pure executable (Amdahl-UTS)
 >12	belong		>0		not stripped
->24	belong		>0		- version %ld
+>24	belong		>0		- version %d
 0	beshort		0530		SVR2 pure executable (USS/370)
 >12	belong		>0		not stripped
->24	belong		>0		- version %ld
+>24	belong		>0		- version %d
 0	beshort		0535		SVR2 executable (USS/370)
 >12	belong		>0		not stripped
->24	belong		>0		- version %ld
+>24	belong		>0		- version %d
 #	$OpenBSD: ibm6000,v 1.4 2004/06/03 03:14:20 tedu Exp $
 
 #------------------------------------------------------------------------------
@@ -8407,7 +8468,7 @@
 0	string	\xed\xfe\xda\xbe	Cytovision FLEX file
 0	string	\xed\xab\xed\xfe	Cytovision FLEX file
 0	string	\xad\xfd\xea\xad	Cytovision RATS file
-#	$OpenBSD: inform,v 1.3 2015/04/24 16:24:42 nicm Exp $
+#	$OpenBSD: inform,v 1.4 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # inform:  file(1) magic for Inform interactive fiction language
@@ -8415,7 +8476,7 @@
 # URL:  http://www.inform-fiction.org/
 # From: Reuben Thomas <rrt@sc3d.org>
 
-0	search/100/cB	constant\ story		Inform source text
+0	search/100/cW	constant\ story		Inform source text
 #	$OpenBSD: intel,v 1.3 2004/06/03 03:14:20 tedu Exp $
 
 #------------------------------------------------------------------------------
@@ -8734,7 +8795,7 @@
 # From: Mathieu Malaterre <mathieu.malaterre@gmail.com>
 0	belong		0xff4fff51						JPEG 2000 codestream
 45	beshort		0xff52
-#	$OpenBSD: karma,v 1.4 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: karma,v 1.5 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # karma:  file(1) magic for Karma data files
@@ -8742,7 +8803,7 @@
 # From <rgooch@atnf.csiro.au>
 
 0	string		KarmaRHD Version	Karma Data Structure Version
->16	belong		x		%lu
+>16	belong		x		%u
 #	$OpenBSD: kde,v 1.2 2009/04/26 14:17:45 chl Exp $
 
 #------------------------------------------------------------------------------
@@ -11005,13 +11066,13 @@
 >>>7		string		x		\b, need V%.4s
 >>8		string		.		
 >>>7		string		x		\b, need V%.3s
-#	$OpenBSD: natinst,v 1.1 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: natinst,v 1.2 2015/10/05 22:48:26 nicm Exp $
 
 #-----------------------------------------------------------------------------
 # natinst:  file(1) magic for National Instruments Code Files
 
 #
-# From <egamez@fcfm.buap.mx> Enrique Gámez-Flores
+# From <egamez@fcfm.buap.mx> Enrique Gamez-Flores
 # version 1
 # Many formats still missing, we use, for the moment LabVIEW
 # We guess VXI format file. VISA, LabWindowsCVI, BridgeVIEW, etc, are missing
@@ -11019,7 +11080,7 @@
 0       string          RSRC            National Instruments,
 # Check if it's a LabVIEW File
 >8      string          LV              LabVIEW File,
-# Check wich kind of file is
+# Check which kind of file it is
 >>10    string          SB              Code Resource File, data
 >>10    string          IN              Virtual Instrument Program, data
 >>10    string          AR              VI Library, data
@@ -11384,11 +11445,11 @@
 >18	belong	x	Bytes1: %u
 >22	belong	x	Flows: %u
 >26	belong	x	Pkts: %u
-#	$OpenBSD: ocaml,v 1.1 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: ocaml,v 1.2 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------------
 # ocaml: file(1) magic for Objective Caml files.
-0	string	Caml1999	Objective caml
+0	string	Caml1999	OCaml
 >8	string	X		exec file
 >8	string	I		interface file (.cmi)
 >8	string	O		object file (.cmo)
@@ -11397,7 +11458,7 @@
 >8	string	Z		native library file (.cmxa)
 >8	string	M		abstract syntax tree implementation file
 >8	string	N		abstract syntax tree interface file
->9	string	>\0		(Version %3.3s).
+>9	string	>\0		(Version %3.3s)
 #	$OpenBSD: octave,v 1.1 2004/06/03 03:14:20 tedu Exp $
 
 #------------------------------------------------------------------------------
@@ -11603,9 +11664,9 @@
 >&213	 byte		0x34			 \b, at least V3R1 to open
 >&213	 byte		0x31			 \b, at least V3R0M5 to open
 >&213	 byte		0x30			 \b, at least V2R3 to open
-#	$OpenBSD: os9,v 1.5 2011/10/15 14:23:29 schwarze Exp $
+#	$OpenBSD: os9,v 1.6 2015/10/05 22:48:26 nicm Exp $
 
-# $NetBSD: os9,v 1.1 1996/05/06 18:24:01 is Exp $
+#------------------------------------------------------------------------------
 #
 # Copyright (c) 1996 Ignatios Souvatzis. All rights reserved.
 #
@@ -11683,8 +11744,9 @@
 >0x12	byte		13	file manager
 >0x12	byte		14	device driver
 >0x12	byte		15	device descriptor
-#	$OpenBSD: osf1,v 1.2 2001/01/29 01:57:57 niklas Exp $
+#	$OpenBSD: osf1,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
+#------------------------------------------------------------------------------
 #
 # Mach magic number info
 #
@@ -12619,8 +12681,9 @@
 0	string	\060\000\040\000\110\000\105\000\101\000\104\000		GEDCOM data
 0	string	\376\377\000\060\000\040\000\110\000\105\000\101\000\104	GEDCOM data
 0	string	\377\376\060\000\040\000\110\000\105\000\101\000\104\000	GEDCOM data
-#	$OpenBSD: securitycerts,v 1.2 2009/04/26 14:17:45 chl Exp $
+#	$OpenBSD: securitycerts,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
+#------------------------------------------------------------------------------
 0	search/1		-----BEGIN\ CERTIFICATE------	RFC1421 Security Certificate text
 0	search/1		-----BEGIN\ NEW\ CERTIFICATE	RFC1421 Security Certificate Signing Request text
 0	belong	0xedfeedfe	Sun 'jks' Java Keystore File data
@@ -12800,7 +12863,7 @@
 0	search/1	#\ HTTP\ Cookie\ File	Web browser cookie text
 0	search/1	#\ Netscape\ HTTP\ Cookie\ File	Netscape cookie text
 0	search/1	#\ KDE\ Cookie\ File	Konqueror cookie text
-#	$OpenBSD: sharc,v 1.3 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: sharc,v 1.4 2015/10/05 22:48:26 nicm Exp $
 
 #------------------------------------------------------------------------
 # file(1) magic for sharc files
@@ -12821,7 +12884,7 @@
 0	string			.system		SHARC architecture file
 
 0	leshort			0x521C		SHARC COFF binary
->2	leshort			>1		, %hd sections
+>2	leshort			>1		, %d sections
 >>12	lelong			>0		, not stripped
 #	$OpenBSD: sinclair,v 1.2 2008/05/08 01:40:57 chl Exp $
 
@@ -12874,7 +12937,7 @@
 # Sketch Drawings: http://sketch.sourceforge.net/ 
 # From: Edwin Mons <e@ik.nu>
 0	search/1	##Sketch	Sketch document text
-#	$OpenBSD: smalltalk,v 1.1 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: smalltalk,v 1.2 2015/10/05 22:48:26 nicm Exp $
 
 #-----------------------------------------------
 # GNU Smalltalk image, starting at version 1.6.2
@@ -12897,7 +12960,6 @@
 #>>12	belong	x		, data: %ld
 #>>16	belong	x		, table: %ld
 #>>20	belong	x		, memory: %ld
-
 
 #	$OpenBSD: sniffer,v 1.5 2008/05/08 01:40:57 chl Exp $
 
@@ -13920,9 +13982,9 @@
 
 0	string	%TGIF\ x 		Tgif file version %s
 
-#	$OpenBSD: ti-8x,v 1.1 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: ti-8x,v 1.2 2015/10/05 22:48:26 nicm Exp $
 
-# ------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # ti-8x: file(1) magic for the TI-8x and TI-9x Graphing Calculators.
 #
 # From: Ryan McGuire (rmcguire@freenet.columbus.oh.us).
@@ -14144,7 +14206,7 @@
 >49		byte		0x24		type: application,
 >49		byte		0x25		type: certificate,
 >49		byte		0x3e		type: license,
->74		lelong		>0		size: %ld bytes
+>74		lelong		>0		size: %d bytes
 
 # VTi & TiEmu skins (TI Graphing Calculators).
 # From: Romain Lievin (roms@lpg.ticalc.org).
@@ -14159,7 +14221,7 @@
 >>7             byte            >0              \b %c
 >>9             byte            x               \b.%c
 >>10		byte		x		\b%c
-#	$OpenBSD: timezone,v 1.4 2004/06/03 03:14:20 tedu Exp $
+#	$OpenBSD: timezone,v 1.5 2015/10/05 23:21:52 nicm Exp $
 
 #------------------------------------------------------------------------------
 # timezone:  file(1) magic for timezone data
@@ -14168,6 +14230,23 @@
 # this should work on Linux, SunOS, and maybe others
 # Added new official magic number for recent versions of the Olson code
 0	string	TZif	timezone data
+>4	byte	0	\b, old version
+>4	byte	>0	\b, version %c
+>20	belong	0	\b, no gmt time flags
+>20	belong	1	\b, 1 gmt time flag
+>20	belong	>1	\b, %d gmt time flags
+>24	belong	0	\b, no std time flags
+>20	belong	1	\b, 1 std time flag
+>24	belong	>1	\b, %d std time flags
+>28	belong	0	\b, no leap seconds
+>28	belong	1	\b, 1 leap second
+>28	belong  >1	\b, %d leap seconds
+>32	belong	0	\b, no transition times
+>32	belong	1	\b, 1 transition time
+>32	belong  >1	\b, %d transition times
+>36	belong	0	\b, no abbreviation chars
+>36	belong	1	\b, 1 abbreviation char
+>36	belong	>1	\b, %d abbreviation chars
 0	string	\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\1\0	old timezone data
 0	string	\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\2\0	old timezone data
 0	string  \0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\3\0	old timezone data
@@ -14208,9 +14287,8 @@
 
 # output data formats
 0	string		\100\357	very old (C/A/T) troff output data
-#	$OpenBSD: tuxedo,v 1.2 2008/05/08 01:40:57 chl Exp $
+#	$OpenBSD: tuxedo,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
-#
 #------------------------------------------------------------------------------
 # tuxedo:	file(1) magic for BEA TUXEDO data files
 #
@@ -14225,9 +14303,9 @@
 0	string		Interpress/Xerox	Xerox InterPress data
 >16	string		/			(version
 >>17	string		>\0			%s)
-#	$OpenBSD: unicode,v 1.3 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: unicode,v 1.4 2015/10/05 22:45:26 nicm Exp $
 
-#---------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Unicode:  BOM prefixed text files - Adrian Havill <havill@turbolinux.co.jp>
 # GRR: These types should be recognised in file_ascmagic so these
 # encodings can be treated by text patterns.
@@ -14238,7 +14316,7 @@
 0	string	+/v+			Unicode text, UTF-7
 0	string	+/v/			Unicode text, UTF-7
 0	string	\335\163\146\163	Unicode text, UTF-8-EBCDIC
-0	string	\376\377\000\000	Unicode text, UTF-32, big-endian
+0	string	\000\000\376\377	Unicode text, UTF-32, big-endian
 0	string	\377\376\000\000	Unicode text, UTF-32, little-endian
 0	string	\016\376\377		Unicode text, SCSU (Standard Compression Scheme for Unicode)
 #	$OpenBSD: unknown,v 1.3 2004/06/03 03:14:20 tedu Exp $
@@ -14494,9 +14572,9 @@
 #
 0	belong	0x03000000	VMS Alpha executable
 >75264	string	PK\003\004	\b, Info-ZIP SFX archive v5.12 w/decryption
-#	$OpenBSD: vmware,v 1.2 2008/05/08 01:40:57 chl Exp $
+#	$OpenBSD: vmware,v 1.3 2015/10/05 22:48:26 nicm Exp $
 
-# -----------------------------------------------------------
+#------------------------------------------------------------------------------
 # VMware specific files (deducted from version 1.1 and log file entries)
 # Anthon van der Neut (anthon@mnt.org)
 0	belong	0x4d52564e	VMware nvram 
