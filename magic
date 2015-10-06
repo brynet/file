@@ -11879,7 +11879,7 @@
 # XXX - byte order?
 #
 0	short	0x2a17	"compact bitmap" format (Poskanzer)
-#	$OpenBSD: pdf,v 1.4 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: pdf,v 1.5 2015/10/06 09:29:13 nicm Exp $
 
 #------------------------------------------------------------------------------
 # pdf:  file(1) magic for Portable Document Format
@@ -11890,9 +11890,15 @@
 >5	byte		x		\b, version %c
 >7	byte		x		\b.%c
 
+0	string		\012%PDF-	PDF document
+!:mime	application/pdf
+>6	byte		x		\b, version %c
+>8	byte		x		\b.%c
+
 # From: Nick Schmalenberger <nick@schmalenberger.us>
 # Forms Data Format
 0       string          %FDF-           FDF document
+!:mime application/vnd.fdf
 >5      byte            x               \b, version %c
 >7      byte            x               \b.%c
 #	$OpenBSD: pdp,v 1.2 2004/06/03 03:14:20 tedu Exp $
@@ -12538,20 +12544,20 @@
 >8	string		NIFF		\b, Notation Interchange File Format
 # SoundFont 2 <mpruett@sgi.com>
 >8	string		sfbk		SoundFont/Bank
-#	$OpenBSD: rpm,v 1.6 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: rpm,v 1.7 2015/10/06 08:12:30 nicm Exp $
 
 #------------------------------------------------------------------------------
 #
 # RPM: file(1) magic for Red Hat Packages   Erik Troan (ewt@redhat.com)
 #
-0	beshort		0xedab
->2	beshort		0xeedb		RPM
+0	belong		0xedabeedb	RPM
 !:mime	application/x-rpm
->>4	byte		x		v%d
->>6	beshort		0		bin
->>6	beshort		1		src
->>8	beshort		1		i386
->>8	beshort		2		Alpha
+>4	byte		x		v%d
+>5	byte		x		\b.%d
+>6	beshort		1		src
+>6	beshort		0		bin
+>>8	beshort		1		i386/x86_64
+>>8	beshort		2		Alpha/Sparc64
 >>8	beshort		3		Sparc
 >>8	beshort		4		MIPS
 >>8	beshort		5		PowerPC
@@ -12562,6 +12568,26 @@
 >>8	beshort		10		Sparc64
 >>8	beshort		11		MIPSel
 >>8	beshort		12		ARM
+>>8	beshort		13		MiNT
+>>8	beshort		14		S/390
+>>8	beshort		15		S/390x
+>>8	beshort		16		PowerPC64
+>>8	beshort		17		SuperH
+>>8	beshort		18		Xtensa
+>>8	beshort		255		noarch
+
+#delta RPM    Daniel Novotny (dnovotny@redhat.com)
+0	string		drpm		Delta RPM
+!:mime  application/x-rpm
+>12	string 	x	%s
+>>8	beshort		11		MIPSel
+>>8	beshort		12		ARM
+>>8	beshort		13		MiNT
+>>8	beshort		14		S/390
+>>8	beshort		15		S/390x
+>>8	beshort		16		PowerPC64
+>>8	beshort		17		SuperH
+>>8	beshort		18		Xtensa
 >>10	string		x		%s
 #	$OpenBSD: rtf,v 1.4 2009/04/24 18:54:34 chl Exp $
 
@@ -13413,6 +13439,31 @@
 >60 string  _MTN               Monotone source repository
 >60 belong  !0                 SQLite 3.x database, user version %u
 >60 belong  0                  SQLite 3.x database
+# $OpenBSD: ssh,v 1.1 2015/10/06 08:13:03 nicm Exp $
+
+# Type:	OpenSSH key files
+# From:	Nicolas Collignon <tsointsoin@gmail.com>
+
+0	string	SSH\ PRIVATE\ KEY	OpenSSH RSA1 private key,
+>28	string	>\0			version %s
+0	string	-----BEGIN\ OPENSSH\ PRIVATE\ KEY-----	OpenSSH private key
+
+0	string	ssh-dss\ 		OpenSSH DSA public key
+0	string	ssh-rsa\ 		OpenSSH RSA public key
+0	string	ecdsa-sha2-nistp256	OpenSSH ECDSA public key
+0	string	ecdsa-sha2-nistp384	OpenSSH ECDSA public key
+0	string	ecdsa-sha2-nistp521	OpenSSH ECDSA public key
+0	string	ssh-ed25519		OpenSSH ED25519 public key
+# $OpenBSD: ssl,v 1.1 2015/10/06 08:13:03 nicm Exp $
+
+# Type: OpenSSL certificates/key files
+# From: Nicolas Collignon <tsointsoin@gmail.com>
+
+0	string	-----BEGIN\ CERTIFICATE-----	PEM certificate
+0	string	-----BEGIN\ CERTIFICATE\ REQ	PEM certificate request
+0	string	-----BEGIN\ RSA\ PRIVATE	PEM RSA private key
+0	string	-----BEGIN\ DSA\ PRIVATE	PEM DSA private key
+0	string	-----BEGIN\ EC\ PRIVATE	PEM EC private key
 #	$OpenBSD: sun,v 1.4 2008/05/08 01:40:57 chl Exp $
 
 #------------------------------------------------------------------------------
@@ -15009,7 +15060,7 @@
 >6	leshort&0x0003	=0x0001			alignment 2
 >6	leshort&0x0003	=0x0002			alignment 4
 >6	leshort&0x0003	=0x0003			alignment 256
-#	$OpenBSD: xwindows,v 1.3 2008/05/14 20:45:35 chl Exp $
+#	$OpenBSD: xwindows,v 1.4 2015/10/06 08:51:00 nicm Exp $
 
 #------------------------------------------------------------------------------
 # xwindows:  file(1) magic for various X/Window system file formats.
@@ -15021,7 +15072,7 @@
 >0	byte	=0				obsolete
 0	string	xkm				Compiled XKB Keymap: msb,
 >3	byte	>0				version %d
->0	byte	=0				obsolete
+>3	byte	=0				obsolete
 
 # xfsdump archive
 0	string	xFSdump0			xfsdump archive
@@ -15029,12 +15080,21 @@
 
 # Jaleo XFS files
 0	long	395726				Jaleo XFS file
->4	long	x				- version %ld
->8	long	x				- [%ld -
->20	long	x				%ldx
->24	long	x				%ldx
->28	long	1008				YUV422]
->28	long	1000				RGB24]
+>4	long	x				- version %d
+>8	long	x				- [%d -
+>20	long	x				\b%dx
+>24	long	x				\b%dx
+>28	long	1008				\bYUV422]
+>28	long	1000				\bRGB24]
+
+# Xcursor data
+# X11 mouse cursor format defined in libXcursor, see
+# http://www.x.org/archive/X11R6.8.1/doc/Xcursor.3.html
+# http://cgit.freedesktop.org/xorg/lib/libXcursor/tree/include/X11/Xcursor/Xcursor.h
+0	string		Xcur		Xcursor data
+!:mime	image/x-xcursor
+>10	leshort		x		version %d
+>>8	leshort		x		\b.%d
 #	$OpenBSD: zilog,v 1.4 2004/06/03 03:14:20 tedu Exp $
 
 #------------------------------------------------------------------------------
