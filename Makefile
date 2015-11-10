@@ -12,6 +12,7 @@ MAN=	file.1 magic.5
 #DPADD=	${LIBUTIL}
 
 CFLAGS= -O2 -D_BSD_SOURCE -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Icompat
+CFLAGS+= -D"pledge(promises,paths)=0"
 CDIAGFLAGS+= -Wno-long-long -Wall -W -Wnested-externs -Wformat=2
 CDIAGFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CDIAGFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wsign-compare

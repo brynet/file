@@ -360,10 +360,8 @@ child(int fd, pid_t parent, int argc, char **argv)
 	int			 i, idx;
 	size_t			 len, width = 0;
 
-#ifdef __OpenBSD__
 	if (pledge("stdio getpw recvfd id", NULL) == -1)
 		err(1, "pledge");
-#endif
 
 	if (geteuid() == 0) {
 		pw = getpwnam(FILE_USER);
@@ -385,10 +383,8 @@ child(int fd, pid_t parent, int argc, char **argv)
 			err(1, "setresuid");
 	}
 
-#ifdef __OpenBSD__
 	if (pledge("stdio recvfd", NULL) == -1)
 		err(1, "pledge");
-#endif
 
 	m = magic_load(magicfp, magicpath, cflag || Wflag);
 	if (cflag) {
