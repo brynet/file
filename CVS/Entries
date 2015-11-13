@@ -2,7 +2,6 @@
 D/magdir////
 /magic-dump.c/1.1/Fri Apr 24 16:24:11 2015//
 /text.c/1.2/Fri Apr 24 16:45:32 2015//
-/xmalloc.h/1.1/Fri Apr 24 16:24:11 2015//
 /file.h/1.29/Thu Apr 30 04:30:05 2015//
 /xmalloc.c/1.2/Result of merge//
 /file.1/1.43/Mon Aug  3 17:27:35 2015//
@@ -12,3 +11,4 @@ D/magdir////
 /magic.h/1.11/Result of merge//
 /magic-test.c/1.15/Result of merge//
 /file.c/1.55/Result of merge//
+/xmalloc.h/1.2/Fri Nov 13 17:05:49 2015//

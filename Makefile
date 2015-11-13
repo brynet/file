@@ -1,7 +1,7 @@
 # $OpenBSD: Makefile,v 1.16 2015/10/04 07:25:59 nicm Exp $
 
 PROG=   file
-SRCS=	file.c magic-dump.c magic-load.c magic-test.c magic-common.c \
+SRCS=   file.c magic-dump.c magic-load.c magic-test.c magic-common.c \
 	text.c xmalloc.c compat/reallocarray.c compat/vis.c compat/fgetln.c \
 	compat/strlcpy.c compat/strlcat.c compat/imsg-buffer.c compat/imsg.c \
 	seccomp-sandbox.c
@@ -53,3 +53,5 @@ clean:
 #syscall-linux.txt:
 #	echo "#include <sys/syscall.h>" | cpp -dM | grep '^#define __NR_' | \
 #	LC_ALL=C sed -r -n -e 's/^\#define[ \t]+__NR_([a-z0-9_]+)[ \t]+([0-9]+)(.*)/ [\2] = "\1",/p' >> $@ ;\
+
+#.include <bsd.prog.mk>
