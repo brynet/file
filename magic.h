@@ -19,6 +19,7 @@
 #ifndef MAGIC_H
 #define MAGIC_H
 
+#include <sys/tree.h>
 #include <sys/queue.h>
 #include <sys/stat.h>
 
@@ -42,13 +43,11 @@ char *fgetln(FILE *_fp, size_t *_len);
 void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 size_t strlcpy(char *_dst, const char *_src, size_t _dstsize);
 size_t strlcat(char *_dst, const char *_src, size_t _dstsize);
-#include "compat/tree.h"
 #else
 #ifdef __FreeBSD__
 void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 #endif
 #include <sys/endian.h>
-#include <sys/tree.h>
 #endif
 
 #define MAGIC_STRING_SIZE 31
