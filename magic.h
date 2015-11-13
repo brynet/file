@@ -37,6 +37,7 @@
 #ifndef __unused
 #define __unused
 #endif
+#define DEF_WEAK(x)
 
 #ifdef __linux
 char *fgetln(FILE *_fp, size_t *_len);
