@@ -2,7 +2,7 @@
 # $Id$
 
 if [ "x$(uname)" = "xOpenBSD" ]; then
-	[ -z "$AUTOMAKE_VERSION" ] && export AUTOMAKE_VERSION=1.14
+	[ -z "$AUTOMAKE_VERSION" ] && export AUTOMAKE_VERSION=1.15
 	[ -z "$AUTOCONF_VERSION" ] && export AUTOCONF_VERSION=2.69
 fi
 
