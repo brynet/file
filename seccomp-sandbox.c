@@ -1,6 +1,7 @@
 /* $OpenBSD: sandbox.c,v 1.9 2015/08/23 18:31:41 guenther Exp $ */
 
 /*
+ * Copyright (c) 2012 Will Drewry <wad@dataspill.org>
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
  *
  * Permission to use, copy, modify, and distribute this software for any
