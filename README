@@ -8,4 +8,7 @@ latest CVS version.
 
 It has been lightly tested on Linux and FreeBSD.
 
+This project makes no attempt at coexisting with other file(1)
+implementations. Take note if installing system wide.
+
 Any bugs introduced in this porting effort are mine.

@@ -34,6 +34,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <limits.h>
+#include <grp.h>
 
 #include "file.h"
 #include "magic.h"
@@ -169,11 +170,10 @@ main(int argc, char **argv)
 		usage();
 
 	magicfp = NULL;
-#ifdef __linux
-	/*  XXX: Linux doesn't have issetugid(2), wtf? */
-	if (geteuid() != 0) {
-#else
+#ifdef HAVE_ISSETUGID
 	if (geteuid() != 0 && !issetugid()) {
+#else
+	if (geteuid() != 0) {
 #endif
 		home = getenv("HOME");
 		if (home == NULL || *home == '\0') {
@@ -200,7 +200,7 @@ main(int argc, char **argv)
 	parent = getpid();
 	if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, pair) != 0)
 		err(1, "socketpair");
-#ifdef __linux
+#ifdef HAVE_PRCTL
 	switch (pid = sandbox_fork()) {
 #else
 	switch (pid = fork()) {

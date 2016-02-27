@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifdef __linux
+#ifdef HAVE_PRCTL
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
@@ -168,4 +168,4 @@ sandbox_fork(void)
 	return (pid);
 }
 
-#endif /* __linux */
+#endif /* HAVE_PRCTL */

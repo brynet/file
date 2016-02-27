@@ -17,6 +17,11 @@
  */
 
 #include <sys/types.h>
+#if defined(HAVE_SYS_ENDIAN_H) && !defined(HAVE_ENDIAN_H)
+#include <sys/endian.h>
+#elif defined(HAVE_ENDIAN_H)
+#include <endian.h>
+#endif
 
 #include <ctype.h>
 #include <errno.h>

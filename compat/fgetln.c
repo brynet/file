@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <errno.h>
 
-void *reallocarray(void *, size_t, size_t);
+#include "magic.h"
 
 char *
 fgetln(FILE *fp, size_t *len)

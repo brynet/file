@@ -25,8 +25,10 @@
 /* User to drop privileges to in child process. */
 #define FILE_USER "_file"
 
+#ifdef HAVE_PRCTL
 /* seccomp-sandbox.c */
 int		 sandbox_fork(void);
+#endif
 
 /* text.c */
 const char	*text_get_type(const void *, size_t);

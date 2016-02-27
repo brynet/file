@@ -39,16 +39,17 @@
 #endif
 #define DEF_WEAK(x)
 
-#ifdef __linux
+#ifndef HAVE_FGETLN
 char *fgetln(FILE *_fp, size_t *_len);
-void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
-size_t strlcpy(char *_dst, const char *_src, size_t _dstsize);
-size_t strlcat(char *_dst, const char *_src, size_t _dstsize);
-#else
-#ifdef __FreeBSD__
+#endif
+#ifndef HAVE_REALLOCARRAY
 void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 #endif
-#include <sys/endian.h>
+#ifndef HAVE_STRLCPY
+size_t strlcpy(char *_dst, const char *_src, size_t _dstsize);
+#endif
+#ifndef HAVE_STRLCAT
+size_t strlcat(char *_dst, const char *_src, size_t _dstsize);
 #endif
 
 #define MAGIC_STRING_SIZE 31
