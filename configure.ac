@@ -1,7 +1,7 @@
 # $Id$
 
-AC_INIT(file, 5.9)
-RELEASE=5.9
+AC_INIT(file, 6.0)
+RELEASE=6.0
 AC_SUBST(RELEASE)
 
 AC_CONFIG_AUX_DIR(etc)
