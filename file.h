@@ -27,7 +27,7 @@
 
 #ifdef HAVE_PRCTL
 /* seccomp-sandbox.c */
-int		 sandbox_fork(void);
+void		 sandbox_child(void);
 #endif
 
 /* text.c */

@@ -60,8 +60,10 @@
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
 
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include <unistd.h>
+#include <err.h>
 
 #include "file.h"
 #include "magic.h"
@@ -85,7 +87,6 @@ static const struct sock_filter child_insns[] = {
 #ifdef SYS_fstat64
 	SC_ALLOW(fstat64),
 #endif
-	SC_ALLOW(geteuid),
 #ifdef SYS_lseek
 	SC_ALLOW(lseek),
 #endif
@@ -142,7 +143,7 @@ sandbox_child_debugging(void)
 #endif /* SANDBOX_DEBUG */
 }
 
-static int
+void
 sandbox_child(void)
 {
 	sandbox_child_debugging();
@@ -151,22 +152,6 @@ sandbox_child(void)
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
 	    &child_program) == -1)
 		err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
-	return (0);
-}
-
-int
-sandbox_fork(void)
-{
-	pid_t			 pid;
-
-	switch (pid = fork()) {
-	case -1:
-		err(1, "fork");
-	case 0:
-		return (sandbox_child());
-	}
-
-	return (pid);
 }
 
 #endif /* HAVE_PRCTL */

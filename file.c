@@ -204,11 +204,7 @@ main(int argc, char **argv)
 	parent = getpid();
 	if (socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, pair) != 0)
 		err(1, "socketpair");
-#ifdef HAVE_PRCTL
-	switch (pid = sandbox_fork()) {
-#else
 	switch (pid = fork()) {
-#endif
 	case -1:
 		err(1, "fork");
 	case 0:
@@ -403,6 +399,10 @@ child(int fd, pid_t parent, int argc, char **argv)
 
 	if (pledge("stdio recvfd", NULL) == -1)
 		err(1, "pledge");
+
+#ifdef HAVE_PRCTL
+	sandbox_child();
+#endif
 
 	m = magic_load(magicfp, magicpath, cflag || Wflag);
 	if (cflag) {
