@@ -379,16 +379,8 @@ child(int fd, pid_t parent, int argc, char **argv)
 
 	if (geteuid() == 0) {
 		pw = getpwnam(FILE_USER);
-#ifdef __OpenBSD__
 		if (pw == NULL)
 			errx(1, "unknown user %s", FILE_USER);
-#else
-		if (pw == NULL) {
-			pw = getpwnam("nobody");
-			if (pw == NULL)
-				errx(1, "unknown user %s or nobody", FILE_USER);
-		}
-#endif
 		if (setgroups(1, &pw->pw_gid) != 0)
 			err(1, "setgroups");
 		if (setresgid(pw->pw_gid, pw->pw_gid, pw->pw_gid) != 0)

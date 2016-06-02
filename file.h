@@ -23,7 +23,9 @@
 #define FILE_READ_SIZE (256 * 1024)
 
 /* User to drop privileges to in child process. */
+#ifndef FILE_USER
 #define FILE_USER "_file"
+#endif
 
 #ifdef HAVE_PRCTL
 /* seccomp-sandbox.c */

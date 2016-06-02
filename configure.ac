@@ -49,6 +49,13 @@ AC_ARG_ENABLE(
 	found_prctl=yes
 )
 
+#
+# Configure unprivileged user.
+AC_ARG_WITH(
+	[user],
+	AS_HELP_STRING([--with-user=user],[privsep user (default: "_file")]),
+	[AC_DEFINE_UNQUOTED([FILE_USER], "$withval", [username to run with])]
+)
 
 AC_CHECK_HEADERS([sys/endian.h endian.h])
 AC_CHECK_HEADERS([sys/tree.h], [], [needs_compat=yes;break])
