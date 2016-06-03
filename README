@@ -6,10 +6,9 @@ OpenBSD mailing lists and tested against the latest CVS version.
 * Linux seccomp-bpf sandbox support derived from portable OpenSSH.
 
 Quick/dirty build & install instructions for Linux:
-	$ cp /etc/magic /etc/magic.orig
-	$ cp ./magic /etc/magic # ... or ~/.magic
 	$ sudo useradd -r -s /usr/bin/nologin _file
 	$ ./configure && make && sudo make install
+	$ sudo install -b -c -o root -g root -m 444 ./magic /etc/magic
 
 This project makes no attempt at coexisting with other file(1)
 implementations. Take note before installing system wide.
