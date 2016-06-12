@@ -1,4 +1,4 @@
-/* $OpenBSD: file.h,v 1.29 2015/04/27 13:52:17 nicm Exp $ */
+/* $OpenBSD: file.h,v 1.30 2016/06/12 21:10:42 nicm Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
