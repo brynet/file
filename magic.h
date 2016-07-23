@@ -34,7 +34,7 @@
 #ifndef __unused
 #define __unused
 #endif
-#define DEF_WEAK(x)
+#define DEF_WEAK(_x)
 
 #ifndef HAVE_FGETLN
 char *fgetln(FILE *_fp, size_t *_len);
