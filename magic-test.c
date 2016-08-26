@@ -1,4 +1,4 @@
-/* $OpenBSD: magic-test.c,v 1.23 2016/05/01 11:26:19 nicm Exp $ */
+/* $OpenBSD: magic-test.c,v 1.24 2016/08/26 08:50:31 guenther Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
