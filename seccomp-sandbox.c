@@ -87,12 +87,14 @@ static const struct sock_filter child_insns[] = {
 #ifdef SYS_fstat64
 	SC_ALLOW(fstat64),
 #endif
+#if defined(SANDBOX_DEBUG)
 #ifdef SYS_lseek
 	SC_ALLOW(lseek),
 #endif
 #ifdef SYS__llseek
 	SC_ALLOW(_llseek),
 #endif
+#endif /* SANDBOX_DEBUG */
 #ifdef SYS_mmap
 	SC_ALLOW(mmap),
 #endif
