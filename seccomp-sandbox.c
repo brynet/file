@@ -53,10 +53,10 @@
 
 /* Simple helpers to avoid manual errors (but larger BPF programs). */
 #define SC_DENY(_nr, _errno) \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_ ## _nr, 0, 1), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 1), \
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ERRNO|(_errno))
 #define SC_ALLOW(_nr) \
-	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, __NR_ ## _nr, 0, 1), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 1), \
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
 
 #include <errno.h>
@@ -79,33 +79,33 @@ static const struct sock_filter child_insns[] = {
 	/* Load the syscall number for checking. */
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, nr)),
-	SC_DENY(open, EACCES),
-	SC_ALLOW(brk),
-	SC_ALLOW(close),
-	SC_ALLOW(exit_group),
-	SC_ALLOW(fstat),
+	SC_DENY(__NR_open, EACCES),
+	SC_ALLOW(__NR_brk),
+	SC_ALLOW(__NR_close),
+	SC_ALLOW(__NR_exit_group),
+	SC_ALLOW(__NR_fstat),
 #ifdef SYS_fstat64
-	SC_ALLOW(fstat64),
+	SC_ALLOW(__NR_fstat64),
 #endif
 #if defined(SANDBOX_DEBUG)
 #ifdef SYS_lseek
-	SC_ALLOW(lseek),
+	SC_ALLOW(__NR_lseek),
 #endif
 #ifdef SYS__llseek
-	SC_ALLOW(_llseek),
+	SC_ALLOW(__NR__llseek),
 #endif
 #endif /* SANDBOX_DEBUG */
 #ifdef SYS_mmap
-	SC_ALLOW(mmap),
+	SC_ALLOW(__NR_mmap),
 #endif
 #ifdef SYS_mmap2
-	SC_ALLOW(mmap2),
+	SC_ALLOW(__NR_mmap2),
 #endif
-	SC_ALLOW(munmap),
-	SC_ALLOW(read),
-	SC_ALLOW(recvmsg),
-	SC_ALLOW(sendmsg),
-	SC_ALLOW(write),
+	SC_ALLOW(__NR_munmap),
+	SC_ALLOW(__NR_read),
+	SC_ALLOW(__NR_recvmsg),
+	SC_ALLOW(__NR_sendmsg),
+	SC_ALLOW(__NR_write),
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
 };
 
