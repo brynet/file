@@ -1,4 +1,4 @@
-/*	$OpenBSD: strlcpy.c,v 1.12 2015/01/15 03:54:12 millert Exp $	*/
+/*	$OpenBSD: strlcpy.c,v 1.15 2016/10/16 17:37:39 dtucker Exp $	*/
 
 /*
  * Copyright (c) 1998, 2015 Todd C. Miller <Todd.Miller@courtesan.com>
@@ -50,3 +50,4 @@ strlcpy(char *dst, const char *src, size_t dsize)
 
 	return(src - osrc - 1);	/* count does not include NUL */
 }
+DEF_WEAK(strlcpy);

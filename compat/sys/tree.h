@@ -1,4 +1,4 @@
-/*	$OpenBSD: tree.h,v 1.14 2015/05/25 03:07:49 deraadt Exp $	*/
+/*	$OpenBSD: tree.h,v 1.25 2016/09/26 08:08:51 kettenis Exp $	*/
 /*
  * Copyright 2002 Niels Provos <provos@citi.umich.edu>
  * All rights reserved.
@@ -26,6 +26,25 @@
 
 #ifndef	_SYS_TREE_H_
 #define	_SYS_TREE_H_
+
+/*	$OpenBSD: _null.h,v 1.2 2016/09/09 22:07:58 millert Exp $	*/
+
+/*
+ * Written by Todd C. Miller, September 9, 2016
+ * Public domain.
+ */
+
+#ifndef NULL
+#if !defined(__cplusplus)
+#define	NULL	((void *)0)
+#elif __cplusplus >= 201103L
+#define	NULL	nullptr
+#elif defined(__GNUG__)
+#define	NULL	__null
+#else
+#define	NULL	0L
+#endif
+#endif
 
 /*
  * This file defines data structures for different types of trees:
@@ -744,5 +763,46 @@ name##_RB_MINMAX(struct name *head, int val)				\
 	for ((x) = RB_MAX(name, head);					\
 	    ((x) != NULL) && ((y) = name##_RB_PREV(x), 1);		\
 	     (x) = (y))
+
+
+/*
+ * Copyright (c) 2016 David Gwynne <dlg@openbsd.org>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+struct rb_type {
+	int		(*t_compare)(const void *, const void *);
+	void		(*t_augment)(void *);
+	unsigned int	  t_offset;	/* offset of rb_entry in type */
+};
+
+struct rb_tree {
+	struct rb_entry	*rbt_root;
+};
+
+struct rb_entry {
+	struct rb_entry	 *rbt_parent;
+	struct rb_entry	 *rbt_left;
+	struct rb_entry	 *rbt_right;
+	unsigned int	  rbt_color;
+};
+
+#define RBT_HEAD(_name, _type)						\
+struct _name {								\
+	struct rb_tree rbh_root;					\
+}
+
+#define RBT_ENTRY(_type)	struct rb_entry
 
 #endif	/* _SYS_TREE_H_ */
