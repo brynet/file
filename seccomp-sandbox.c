@@ -87,6 +87,9 @@ static const struct sock_filter child_insns[] = {
 #ifdef SYS_fstat64
 	SC_ALLOW(__NR_fstat64),
 #endif
+#ifdef SYS_getpagesize
+	SC_ALLOW(__NR_getpagesize),
+#endif
 #if defined(SANDBOX_DEBUG)
 #ifdef SYS_lseek
 	SC_ALLOW(__NR_lseek),
