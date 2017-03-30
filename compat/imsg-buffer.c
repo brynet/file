@@ -28,6 +28,7 @@
 #include <unistd.h>
 
 #include "imsg.h"
+#include "magic.h"
 
 int	ibuf_realloc(struct ibuf *, size_t);
 void	ibuf_enqueue(struct msgbuf *, struct ibuf *);
