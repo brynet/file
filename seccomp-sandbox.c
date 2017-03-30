@@ -90,6 +90,13 @@ static const struct sock_filter child_insns[] = {
 #ifdef SYS_getpagesize
 	SC_ALLOW(__NR_getpagesize),
 #endif
+	SC_ALLOW(__NR_getpid),
+	/*
+	 * Newer glibc versions do ioctl(.., TCGETS) internally.
+	 * OpenBSD 5.8 replaced isatty(3) with a fcntl(2) implementation
+	 * to avoid ioctl(2) calls for libc stdio.
+	 */
+	SC_DENY(__NR_ioctl, ENOTTY),
 #if defined(SANDBOX_DEBUG)
 #ifdef SYS_lseek
 	SC_ALLOW(__NR_lseek),
