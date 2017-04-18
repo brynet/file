@@ -1,4 +1,4 @@
-/* $OpenBSD: file.c,v 1.58 2016/05/01 20:34:26 nicm Exp $ */
+/* $OpenBSD: file.c,v 1.59 2017/04/18 14:16:48 nicm Exp $ */
 
 /*
  * Copyright (c) 2015 Nicholas Marriott <nicm@openbsd.org>
@@ -44,8 +44,7 @@
 #include "magic.h"
 #include "xmalloc.h"
 
-struct input_msg
-{
+struct input_msg {
 	int		idx;
 
 	struct stat	sb;
@@ -56,13 +55,11 @@ struct input_msg
 	int		link_target;
 };
 
-struct input_ack
-{
+struct input_ack {
 	int		idx;
 };
 
-struct input_file
-{
+struct input_file {
 	struct magic		*m;
 	struct input_msg	*msg;
 
@@ -457,7 +454,7 @@ fill_buffer(int fd, size_t size, size_t *used)
 		if (got == -1) {
 			if (errno == EINTR)
 				continue;
-			return NULL;
+			return (NULL);
 		}
 		if (got == 0)
 			break;
@@ -465,7 +462,7 @@ fill_buffer(int fd, size_t size, size_t *used)
 		left -= got;
 	}
 	*used = size - left;
-	return buffer;
+	return (buffer);
 }
 
 static int
