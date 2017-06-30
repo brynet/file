@@ -1,4 +1,4 @@
-# $OpenBSD: Makefile,v 1.16 2015/10/04 07:25:59 nicm Exp $
+# $OpenBSD: Makefile,v 1.17 2017/06/28 13:37:56 brynet Exp $
 
 PROG=   file
 SRCS=   file.c magic-dump.c magic-load.c magic-test.c magic-common.c \
@@ -7,9 +7,6 @@ SRCS=   file.c magic-dump.c magic-load.c magic-test.c magic-common.c \
 	seccomp-sandbox.c
 OBJS=	$(patsubst %.c,%.o,$(SRCS))
 MAN=	file.1 magic.5
-
-#LDADD=	-lutil
-#DPADD=	${LIBUTIL}
 
 CFLAGS= -O2 -D_BSD_SOURCE -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Icompat
 CFLAGS+= -D"pledge(promises,paths)=0"
