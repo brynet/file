@@ -69,8 +69,8 @@
 #include "magic.h"
 #include "xmalloc.h"
 
-/* Syscall filtering set for child. */
-static const struct sock_filter child_insns[] = {
+/* Syscall filtering set */
+static const struct sock_filter filt_insns[] = {
 	/* Ensure the syscall arch convention is as expected. */
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, arch)),
@@ -113,15 +113,13 @@ static const struct sock_filter child_insns[] = {
 #endif
 	SC_ALLOW(__NR_munmap),
 	SC_ALLOW(__NR_read),
-	SC_ALLOW(__NR_recvmsg),
-	SC_ALLOW(__NR_sendmsg),
 	SC_ALLOW(__NR_write),
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
 };
 
-static const struct sock_fprog child_program = {
-	.len = (unsigned short)(sizeof(child_insns)/sizeof(child_insns[0])),
-	.filter = (struct sock_filter *)child_insns,
+static const struct sock_fprog filt_program = {
+	.len = (unsigned short)(sizeof(filt_insns)/sizeof(filt_insns[0])),
+	.filter = (struct sock_filter *)filt_insns,
 };
 
 #ifdef SANDBOX_DEBUG
@@ -136,7 +134,7 @@ sandbox_violation(int signum, siginfo_t *info, void *void_context)
 #endif /* SANDBOX_DEBUG */
 
 static void
-sandbox_child_debugging(void)
+sandbox_seccomp_debugging(void)
 {
 #ifdef SANDBOX_DEBUG
 	struct sigaction act;
@@ -156,13 +154,13 @@ sandbox_child_debugging(void)
 }
 
 void
-sandbox_child(void)
+sandbox_seccomp(void)
 {
-	sandbox_child_debugging();
+	sandbox_seccomp_debugging();
 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == -1)
 		err(1, "prctl(PR_SET_NO_NEW_PRIVS)");
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
-	    &child_program) == -1)
+	    &filt_program) == -1)
 		err(1, "prctl(PR_SET_SECCOMP/SECCOMP_MODE_FILTER)");
 }
 

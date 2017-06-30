@@ -4,14 +4,14 @@ bin_PROGRAMS = file
 #CLEANFILES =
 
 #CPPFLAGS +=
-CFLAGS += -D_GNU_SOURCE -D_BSD_SOURCE -std=gnu99 -O2
+CFLAGS += -D_GNU_SOURCE -D_BSD_SOURCE -std=gnu99
 CFLAGS += -fstack-protector-all
 if IS_PIE
 CFLAGS += -fPIE
 LDFLAGS += -pie
 endif
 if IS_DEBUG
-CFLAGS += -g
+CFLAGS += -O0 -g
 CFLAGS += -Wno-long-long -Wall -W -Wnested-externs -Wformat=2
 CFLAGS += -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CFLAGS += -Wwrite-strings -Wshadow -Wpointer-arith -Wsign-compare
@@ -21,6 +21,8 @@ if PRCTL
 CPPFLAGS += -DSANDBOX_DEBUG
 endif
 CPPFLAGS += -DDEBUG
+else !IS_DEBUG
+CFLAGS += -O2
 endif
 
 dist_man1_MANS = file.1
@@ -48,21 +50,12 @@ endif
 if NO_STRLCPY
 nodist_file_SOURCES += compat/strlcpy.c
 endif
-if NO_EXPLICIT_BZERO
-nodist_file_SOURCES += compat/explicit_bzero.c
-endif
 if NO_REALLOCARRAY
 nodist_file_SOURCES += compat/reallocarray.c
-endif
-if NO_RECALLOCARRAY
-nodist_file_SOURCES += compat/recallocarray.c
 endif
 if NO_VIS
 nodist_file_SOURCES += compat/vis.c
 endif
 if NO_FGETLN
 nodist_file_SOURCES += compat/fgetln.c
-endif
-if NO_IMSG
-nodist_file_SOURCES += compat/imsg-buffer.c compat/imsg.c
 endif

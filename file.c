@@ -204,7 +204,7 @@ main(int argc, char **argv)
 		err(1, "pledge");
 
 #ifdef HAVE_PRCTL
-	sandbox_child();
+	sandbox_seccomp();
 #endif
 
 	m = magic_load(magicfp, magicpath, cflag || Wflag);
