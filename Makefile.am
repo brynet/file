@@ -17,9 +17,6 @@ CFLAGS += -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CFLAGS += -Wwrite-strings -Wshadow -Wpointer-arith -Wsign-compare
 CFLAGS += -Wundef -Wbad-function-cast -Winline -Wcast-align
 CFLAGS += -Wdeclaration-after-statement -Wno-pointer-sign
-if PRCTL
-CPPFLAGS += -DSANDBOX_DEBUG
-endif
 CPPFLAGS += -DDEBUG
 else !IS_DEBUG
 CFLAGS += -O2

@@ -36,12 +36,6 @@
 /* Linux seccomp_filter sandbox */
 #define SECCOMP_FILTER_FAIL SECCOMP_RET_KILL
 
-/* Use a signal handler to emit violations when debugging */
-#ifdef SANDBOX_DEBUG
-#undef SECCOMP_FILTER_FAIL
-#define SECCOMP_FILTER_FAIL SECCOMP_RET_TRAP
-#endif
-
 /* XXX: */
 #ifndef SECCOMP_AUDIT_ARCH
 #if defined __i386__
@@ -97,14 +91,6 @@ static const struct sock_filter filt_insns[] = {
 	 * to avoid ioctl(2) calls for libc stdio.
 	 */
 	SC_DENY(__NR_ioctl, ENOTTY),
-#if defined(SANDBOX_DEBUG)
-#ifdef SYS_lseek
-	SC_ALLOW(__NR_lseek),
-#endif
-#ifdef SYS__llseek
-	SC_ALLOW(__NR__llseek),
-#endif
-#endif /* SANDBOX_DEBUG */
 #ifdef SYS_mmap
 	SC_ALLOW(__NR_mmap),
 #endif
@@ -122,41 +108,9 @@ static const struct sock_fprog filt_program = {
 	.filter = (struct sock_filter *)filt_insns,
 };
 
-#ifdef SANDBOX_DEBUG
-static void
-sandbox_violation(int signum, siginfo_t *info, void *void_context)
-{
-	dprintf(STDOUT_FILENO,
-	    "%s: unexpected system call (arch:0x%x,syscall:%d @ %p)\n",
-	    __func__, info->si_arch, info->si_syscall, info->si_call_addr);
-	_exit(1);
-}
-#endif /* SANDBOX_DEBUG */
-
-static void
-sandbox_seccomp_debugging(void)
-{
-#ifdef SANDBOX_DEBUG
-	struct sigaction act;
-	sigset_t mask;
-
-	memset(&act, 0, sizeof(act));
-	sigemptyset(&mask);
-	sigaddset(&mask, SIGSYS);
-
-	act.sa_sigaction = &sandbox_violation;
-	act.sa_flags = SA_SIGINFO;
-	if (sigaction(SIGSYS, &act, NULL) == -1)
-		err(1, "sigaction(SIGSYS)");
-	if (sigprocmask(SIG_UNBLOCK, &mask, NULL) == -1)
-		err(1, "sigprocmask(SIGSYS)");
-#endif /* SANDBOX_DEBUG */
-}
-
 void
 sandbox_seccomp(void)
 {
-	sandbox_seccomp_debugging();
 	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) == -1)
 		err(1, "prctl(PR_SET_NO_NEW_PRIVS)");
 	if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER,
