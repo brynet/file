@@ -98,12 +98,6 @@ if test "x$found_vis" = xyes; then
 fi
 AM_CONDITIONAL(NO_VIS, [test "x$found_vis" = xno])
 
-AC_CHECK_FUNC(fgetln, found_fgetln=yes, found_fgetln=no)
-if test "x$found_fgetln" = xyes; then
-	AC_DEFINE(HAVE_FGETLN)
-fi
-AM_CONDITIONAL(NO_FGETLN, [test "x$found_fgetln" = xno])
-
 if test "x$found_prctl" = xyes; then
 	AC_CHECK_FUNC(prctl, found_prctl=yes, found_prctl=no)
 	if test "x$found_prctl" = xyes; then

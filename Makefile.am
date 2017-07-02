@@ -53,6 +53,3 @@ endif
 if NO_VIS
 nodist_file_SOURCES += compat/vis.c
 endif
-if NO_FGETLN
-nodist_file_SOURCES += compat/fgetln.c
-endif

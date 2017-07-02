@@ -36,9 +36,6 @@
 #endif
 #define DEF_WEAK(_x)
 
-#ifndef HAVE_FGETLN
-char *fgetln(FILE *_fp, size_t *_len);
-#endif
 #ifndef HAVE_REALLOCARRAY
 void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 #endif
