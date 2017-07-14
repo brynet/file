@@ -73,33 +73,59 @@ static const struct sock_filter filt_insns[] = {
 	/* Load the syscall number for checking. */
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, nr)),
+
+	/* Syscalls to non-fatally deny. */
+#ifdef __NR_open
 	SC_DENY(__NR_open, EACCES),
-	SC_ALLOW(__NR_brk),
-	SC_ALLOW(__NR_close),
-	SC_ALLOW(__NR_exit_group),
-	SC_ALLOW(__NR_fstat),
-#ifdef SYS_fstat64
-	SC_ALLOW(__NR_fstat64),
 #endif
-#ifdef SYS_getpagesize
-	SC_ALLOW(__NR_getpagesize),
-#endif
-	SC_ALLOW(__NR_getpid),
 	/*
 	 * Newer glibc versions do ioctl(.., TCGETS) internally.
 	 * OpenBSD 5.8 replaced isatty(3) with a fcntl(2) implementation
 	 * to avoid ioctl(2) calls for libc stdio.
 	 */
+#ifdef __NR_ioctl
 	SC_DENY(__NR_ioctl, ENOTTY),
-#ifdef SYS_mmap
+#endif
+
+	/* Syscalls to permit. */
+#ifdef __NR_brk
+	SC_ALLOW(__NR_brk),
+#endif
+#ifdef __NR_close
+	SC_ALLOW(__NR_close),
+#endif
+#ifdef __NR_exit_group
+	SC_ALLOW(__NR_exit_group),
+#endif
+#ifdef __NR_fstat
+	SC_ALLOW(__NR_fstat),
+#endif
+#ifdef __NR_fstat64
+	SC_ALLOW(__NR_fstat64),
+#endif
+#ifdef __NR_getpagesize
+	SC_ALLOW(__NR_getpagesize),
+#endif
+#ifdef __NR_getpid
+	SC_ALLOW(__NR_getpid),
+#endif
+#ifdef __NR_mmap
 	SC_ALLOW(__NR_mmap),
 #endif
-#ifdef SYS_mmap2
+#ifdef __NR_mmap2
 	SC_ALLOW(__NR_mmap2),
 #endif
+#ifdef __NR_munmap
 	SC_ALLOW(__NR_munmap),
+#endif
+#ifdef __NR_read
 	SC_ALLOW(__NR_read),
+#endif
+#ifdef __NR_write
 	SC_ALLOW(__NR_write),
+#endif
+
+	/* Default deny. */
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
 };
 
