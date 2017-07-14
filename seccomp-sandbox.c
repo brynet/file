@@ -103,12 +103,6 @@ static const struct sock_filter filt_insns[] = {
 #ifdef __NR_fstat64
 	SC_ALLOW(__NR_fstat64),
 #endif
-#ifdef __NR_getpagesize
-	SC_ALLOW(__NR_getpagesize),
-#endif
-#ifdef __NR_getpid
-	SC_ALLOW(__NR_getpid),
-#endif
 #ifdef __NR_mmap
 	SC_ALLOW(__NR_mmap),
 #endif
