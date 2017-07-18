@@ -17,11 +17,12 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+/* Linux seccomp_filter sandbox */
+
 #ifdef HAVE_PRCTL
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/syscall.h>
-#include <sys/wait.h>
 
 #include <sys/resource.h>
 #include <sys/prctl.h>
@@ -32,9 +33,6 @@
 #include <linux/seccomp.h>
 
 #include <stddef.h> /* offsetof */
-
-/* Linux seccomp_filter sandbox */
-#define SECCOMP_FILTER_FAIL SECCOMP_RET_KILL
 
 /* XXX: */
 #ifndef SECCOMP_AUDIT_ARCH
@@ -54,14 +52,7 @@
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
 
 #include <errno.h>
-#include <string.h>
-#include <signal.h>
-#include <unistd.h>
 #include <err.h>
-
-#include "file.h"
-#include "magic.h"
-#include "xmalloc.h"
 
 /* Syscall filtering set */
 static const struct sock_filter filt_insns[] = {
@@ -69,7 +60,7 @@ static const struct sock_filter filt_insns[] = {
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, arch)),
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, SECCOMP_AUDIT_ARCH, 1, 0),
-	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_KILL),
 	/* Load the syscall number for checking. */
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, nr)),
@@ -120,7 +111,7 @@ static const struct sock_filter filt_insns[] = {
 #endif
 
 	/* Default deny. */
-	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_KILL),
 };
 
 static const struct sock_fprog filt_program = {
