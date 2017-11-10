@@ -69,6 +69,9 @@ static const struct sock_filter filt_insns[] = {
 #ifdef __NR_open
 	SC_DENY(__NR_open, EACCES),
 #endif
+#ifdef __NR_openat
+	SC_DENY(__NR_openat, EACCES),
+#endif
 	/*
 	 * Newer glibc versions do ioctl(.., TCGETS) internally.
 	 * OpenBSD 5.8 replaced isatty(3) with a fcntl(2) implementation
