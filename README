@@ -6,7 +6,7 @@ OpenBSD mailing lists and tested against the latest CVS version.
 * Linux seccomp-bpf sandbox support derived from portable OpenSSH.
 
 Quick/dirty build & install instructions for Linux (glibc):
-	$ sudo useradd -r -s /usr/bin/nologin _file
+	$ sudo useradd -r -s /usr/sbin/nologin _file
 	$ ./configure && make && sudo make install
 	$ sudo install -b -c -o root -g root -m 444 ./magic /etc/magic
 
