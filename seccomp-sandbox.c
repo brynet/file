@@ -36,7 +36,9 @@
 
 /* XXX: */
 #ifndef SECCOMP_AUDIT_ARCH
-#if defined __i386__
+#if defined __arm__
+#define SECCOMP_AUDIT_ARCH AUDIT_ARCH_ARM
+#elif defined __i386__
 #define SECCOMP_AUDIT_ARCH AUDIT_ARCH_I386
 #elif defined __x86_64__ || defined __amd64__
 #define SECCOMP_AUDIT_ARCH AUDIT_ARCH_X86_64
