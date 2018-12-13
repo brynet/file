@@ -1,4 +1,4 @@
-/*	$OpenBSD: imsg-buffer.c,v 1.9 2017/03/17 14:51:26 deraadt Exp $	*/
+/*	$OpenBSD: imsg-buffer.c,v 1.11 2017/12/14 09:27:44 kettenis Exp $	*/
 
 /*
  * Copyright (c) 2003, 2004 Henning Brauer <henning@openbsd.org>
@@ -30,9 +30,9 @@
 #include "imsg.h"
 #include "magic.h"
 
-int	ibuf_realloc(struct ibuf *, size_t);
-void	ibuf_enqueue(struct msgbuf *, struct ibuf *);
-void	ibuf_dequeue(struct msgbuf *, struct ibuf *);
+static int	ibuf_realloc(struct ibuf *, size_t);
+static void	ibuf_enqueue(struct msgbuf *, struct ibuf *);
+static void	ibuf_dequeue(struct msgbuf *, struct ibuf *);
 
 struct ibuf *
 ibuf_open(size_t len)
@@ -68,7 +68,7 @@ ibuf_dynamic(size_t len, size_t max)
 	return (buf);
 }
 
-int
+static int
 ibuf_realloc(struct ibuf *buf, size_t len)
 {
 	u_char	*b;
@@ -290,14 +290,14 @@ again:
 	return (1);
 }
 
-void
+static void
 ibuf_enqueue(struct msgbuf *msgbuf, struct ibuf *buf)
 {
 	TAILQ_INSERT_TAIL(&msgbuf->bufs, buf, entry);
 	msgbuf->queued++;
 }
 
-void
+static void
 ibuf_dequeue(struct msgbuf *msgbuf, struct ibuf *buf)
 {
 	TAILQ_REMOVE(&msgbuf->bufs, buf, entry);

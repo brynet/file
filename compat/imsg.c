@@ -1,4 +1,4 @@
-/*	$OpenBSD: imsg.c,v 1.14 2017/03/24 09:34:12 nicm Exp $	*/
+/*	$OpenBSD: imsg.c,v 1.16 2017/12/14 09:27:44 kettenis Exp $	*/
 
 /*
  * Copyright (c) 2003, 2004 Henning Brauer <henning@openbsd.org>
@@ -30,7 +30,7 @@
 
 int	 imsg_fd_overhead = 0;
 
-int	 imsg_get_fd(struct imsgbuf *);
+static int	 imsg_get_fd(struct imsgbuf *);
 
 void
 imsg_init(struct imsgbuf *ibuf, int fd)
@@ -268,7 +268,7 @@ imsg_free(struct imsg *imsg)
 	free(imsg->data);
 }
 
-int
+static int
 imsg_get_fd(struct imsgbuf *ibuf)
 {
 	int		 fd;
