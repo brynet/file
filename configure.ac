@@ -60,7 +60,7 @@ AC_ARG_WITH(
 AC_CHECK_HEADERS([sys/endian.h endian.h])
 AC_CHECK_HEADERS([sys/tree.h], [], [needs_compat=yes;break])
 AC_CHECK_HEADERS([vis.h], [], [needs_compat=yes;break])
-AC_CHECK_HEADERS([sys/queue.h], [], [needs_compat=yes;break],
+AC_CHECK_HEADERS([sys/queue.h imsg.h], [], [needs_compat=yes;break],
 	[#include <sys/types.h>
 	#include <sys/queue.h>])
 AS_IF([test "x$needs_compat" = "xyes"], [CPPFLAGS="$CPPFLAGS -Icompat"])
@@ -74,6 +74,17 @@ AC_CHECK_FUNCS(
 	]
 )
 
+AC_SEARCH_LIBS(
+	imsg_init,
+	[util],
+	found_imsg=yes,
+	found_imsg=no
+)
+if test "x$found_imsg" = xyes; then
+	AC_DEFINE(HAVE_IMSG)
+fi
+AM_CONDITIONAL(NO_IMSG, [test "x$found_imsg" = xno])
+
 AC_CHECK_DECL(strlcpy, found_strlcpy=yes, found_strlcpy=no)
 if test "x$found_strlcpy" = xyes; then
 	AC_DEFINE(HAVE_STRLCPY)
@@ -86,11 +97,23 @@ if test "x$found_strlcat" = xyes; then
 fi
 AM_CONDITIONAL(NO_STRLCAT, [test "x$found_strlcat" = xno])
 
+AC_CHECK_FUNC(explicit_bzero, found_explicit_bzero=yes, found_explicit_bzero=no)
+if test "x$found_explicit_bzero" = xyes; then
+	AC_DEFINE(HAVE_EXPLICIT_BZERO)
+fi
+AM_CONDITIONAL(NO_EXPLICIT_BZERO, [test "x$found_explicit_bzero" = xno])
+
 AC_CHECK_FUNC(reallocarray, found_reallocarray=yes, found_reallocarray=no)
 if test "x$found_reallocarray" = xyes; then
 	AC_DEFINE(HAVE_REALLOCARRAY)
 fi
 AM_CONDITIONAL(NO_REALLOCARRAY, [test "x$found_reallocarray" = xno])
+
+AC_CHECK_FUNC(recallocarray, found_recallocarray=yes, found_recallocarray=no)
+if test "x$found_recallocarray" = xyes; then
+	AC_DEFINE(HAVE_RECALLOCARRAY)
+fi
+AM_CONDITIONAL(NO_RECALLOCARRAY, [test "x$found_recallocarray" = xno])
 
 AC_CHECK_FUNC(vis, found_vis=yes, found_vis=no)
 if test "x$found_vis" = xyes; then
