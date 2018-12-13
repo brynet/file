@@ -1,15 +1,13 @@
-# $OpenBSD: Makefile,v 1.17 2017/06/28 13:37:56 brynet Exp $
+# $OpenBSD: Makefile,v 1.18 2018/01/15 19:45:51 brynet Exp $
 
 PROG=   file
 SRCS=   file.c magic-dump.c magic-load.c magic-test.c magic-common.c \
-	text.c xmalloc.c compat/reallocarray.c compat/vis.c \
-	compat/strlcpy.c compat/strlcat.c \
-	seccomp-sandbox.c
-OBJS=	$(patsubst %.c,%.o,$(SRCS))
+	text.c xmalloc.c
 MAN=	file.1 magic.5
 
-CFLAGS= -O2 -D_BSD_SOURCE -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 -I. -Icompat
-CFLAGS+= -D"pledge(promises,paths)=0"
+LDADD=	-lutil
+DPADD=	${LIBUTIL}
+
 CDIAGFLAGS+= -Wno-long-long -Wall -W -Wnested-externs -Wformat=2
 CDIAGFLAGS+= -Wmissing-prototypes -Wstrict-prototypes -Wmissing-declarations
 CDIAGFLAGS+= -Wwrite-strings -Wshadow -Wpointer-arith -Wsign-compare
@@ -39,13 +37,8 @@ MAGFILES=	$(.CURDIR)/magdir/[0-9a-z]*
 #	${INSTALL} ${INSTALL_COPY} -o $(MAGICOWN) -g $(MAGICGRP) \
 #		-m $(MAGICMODE) magic $(DESTDIR)$(MAGIC)
 
-all: $(PROG)
-
-$(PROG): $(OBJS)
-	$(CC) $(OBJS) -o $(PROG) $(LDFLAGS)
-
-clean:
-	rm -f $(OBJS) $(PROG)
+all:
+	@echo "You didn't run ./configure or ./autogen.sh"
 
 #syscall-linux.txt:
 #	echo "#include <sys/syscall.h>" | cpp -dM | grep '^#define __NR_' | \
