@@ -24,6 +24,9 @@
 #include <sys/stat.h>
 #include <sys/uio.h>
 #include <sys/wait.h>
+#ifdef __linux
+#include <sys/sysmacros.h>
+#endif
 
 #include <err.h>
 #include <errno.h>

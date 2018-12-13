@@ -99,6 +99,9 @@ static const struct sock_filter filt_insns[] = {
 #ifdef __NR_fstat64
 	SC_ALLOW(__NR_fstat64),
 #endif
+#ifdef __NR_getpid
+	SC_ALLOW(__NR_getpid),
+#endif
 #ifdef __NR_mmap
 	SC_ALLOW(__NR_mmap),
 #endif
@@ -110,6 +113,15 @@ static const struct sock_filter filt_insns[] = {
 #endif
 #ifdef __NR_read
 	SC_ALLOW(__NR_read),
+#endif
+#ifdef __NR_recvmsg
+	SC_ALLOW(__NR_recvmsg),
+#endif
+#ifdef __NR_sendmsg
+	SC_ALLOW(__NR_sendmsg),
+#endif
+#ifdef __NR_wait
+	SC_ALLOW(__NR_wait),
 #endif
 #ifdef __NR_write
 	SC_ALLOW(__NR_write),
