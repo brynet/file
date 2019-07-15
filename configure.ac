@@ -103,6 +103,12 @@ if test "x$found_explicit_bzero" = xyes; then
 fi
 AM_CONDITIONAL(NO_EXPLICIT_BZERO, [test "x$found_explicit_bzero" = xno])
 
+AC_CHECK_FUNC(freezero, found_freezero=yes, found_freezero=no)
+if test "x$found_freezero" = xyes; then
+	AC_DEFINE(HAVE_FREEZERO)
+fi
+AM_CONDITIONAL(NO_FREEZERO, [test "x$found_freezero" = xno])
+
 AC_CHECK_FUNC(reallocarray, found_reallocarray=yes, found_reallocarray=no)
 if test "x$found_reallocarray" = xyes; then
 	AC_DEFINE(HAVE_REALLOCARRAY)

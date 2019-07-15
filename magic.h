@@ -39,6 +39,9 @@
 #ifndef HAVE_EXPLICIT_BZERO
 void explicit_bzero(void *_buf, size_t _len);
 #endif
+#ifndef HAVE_FREEZERO
+void freezero(void *_ptr, size_t _size);
+#endif
 #ifndef HAVE_RECALLOCARRAY
 void *recallocarray(void *_ptr, size_t _oldnmemb, size_t _newnmemb,
     size_t _size);

@@ -50,6 +50,9 @@ endif
 if NO_EXPLICIT_BZERO
 nodist_file_SOURCES += compat/explicit_bzero.c
 endif
+if NO_FREEZERO
+nodist_file_SOURCES += compat/freezero.c
+endif
 if NO_IMSG
 nodist_file_SOURCES += compat/imsg-buffer.c compat/imsg.c
 endif
