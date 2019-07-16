@@ -20,6 +20,7 @@
 /* OPENBSD ORIGINAL: lib/libc/stdlib/malloc.c */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "magic.h"
 
