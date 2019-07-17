@@ -41,6 +41,12 @@ dist_file_SOURCES += seccomp-sandbox.c
 endif
 
 nodist_file_SOURCES =
+if NO_SETRESGID
+nodist_file_SOURCES += compat/setresgid.c
+endif
+if NO_SETRESUID
+nodist_file_SOURCES += compat/setresuid.c
+endif
 if NO_STRLCAT
 nodist_file_SOURCES += compat/strlcat.c
 endif

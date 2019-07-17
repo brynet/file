@@ -49,6 +49,12 @@ void *recallocarray(void *_ptr, size_t _oldnmemb, size_t _newnmemb,
 #ifndef HAVE_REALLOCARRAY
 void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 #endif
+#ifndef HAVE_SETRESGID
+int setresgid(gid_t _rgid, gid_t _egid, gid_t _sgid);
+#endif
+#ifndef HAVE_SETRESUID
+int setresuid(uid_t _ruid, uid_t _euid, uid_t _suid);
+#endif
 #ifndef HAVE_STRLCPY
 size_t strlcpy(char *_dst, const char *_src, size_t _dstsize);
 #endif

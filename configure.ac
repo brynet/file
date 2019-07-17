@@ -69,8 +69,6 @@ AC_CHECK_FUNCS(
 	[ \
 		issetugid \
 		setgroups \
-		setresuid \
-		setresgid \
 	]
 )
 
@@ -108,6 +106,32 @@ if test "x$found_freezero" = xyes; then
 	AC_DEFINE(HAVE_FREEZERO)
 fi
 AM_CONDITIONAL(NO_FREEZERO, [test "x$found_freezero" = xno])
+
+AC_CHECK_FUNC(setresgid, found_setresgid=yes, found_setresgid=no)
+if test "x$found_setresgid" = xyes; then
+	AC_DEFINE(HAVE_SETRESGID)
+fi
+AM_CONDITIONAL(NO_SETRESGID, [test "x$found_setresgid" = xno])
+
+AC_CHECK_FUNC(setresuid, found_setresuid=yes, found_setresuid=no)
+if test "x$found_setresuid" = xyes; then
+	AC_DEFINE(HAVE_SETRESUID)
+fi
+AM_CONDITIONAL(NO_SETRESUID, [test "x$found_setresuid" = xno])
+
+# Used by setresgid compat
+AC_CHECK_FUNC(setregid, found_setregid=yes, found_setregid=no)
+if test "x$found_setregid" = xyes; then
+	AC_DEFINE(HAVE_SETREGID)
+fi
+AM_CONDITIONAL(NO_SETREGID, [test "x$found_setregid" = xno])
+
+# Used by setresuid compat
+AC_CHECK_FUNC(setreuid, found_setreuid=yes, found_setreuid=no)
+if test "x$found_setreuid" = xyes; then
+	AC_DEFINE(HAVE_SETREUID)
+fi
+AM_CONDITIONAL(NO_SETREUID, [test "x$found_setreuid" = xno])
 
 AC_CHECK_FUNC(reallocarray, found_reallocarray=yes, found_reallocarray=no)
 if test "x$found_reallocarray" = xyes; then
