@@ -8,6 +8,16 @@ AC_CONFIG_AUX_DIR(etc)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 AC_CANONICAL_HOST
+case $host_os in
+	*netbsd*)
+		AC_DEFINE(_OPENBSD_SOURCE)
+		;;
+	*linux*)
+		AC_DEFINE(_GNU_SOURCE)
+		;;
+	*)
+		;;
+esac
 
 : ${CFLAGS=""}
 
@@ -59,7 +69,15 @@ AC_ARG_WITH(
 
 AC_CHECK_HEADERS([sys/endian.h endian.h])
 AC_CHECK_HEADERS([sys/tree.h], [], [needs_compat=yes;break])
-AC_CHECK_HEADERS([vis.h], [], [needs_compat=yes;break])
+case $host_os in
+	*netbsd*)
+		# NetBSD vis SIGSEGV's
+		needs_compat=yes
+		;;
+	*)
+		AC_CHECK_HEADERS([vis.h], [], [needs_compat=yes;break])
+		;;
+esac
 AC_CHECK_HEADERS([sys/queue.h imsg.h], [], [needs_compat=yes;break],
 	[#include <sys/types.h>
 	#include <sys/queue.h>])
@@ -145,10 +163,18 @@ if test "x$found_recallocarray" = xyes; then
 fi
 AM_CONDITIONAL(NO_RECALLOCARRAY, [test "x$found_recallocarray" = xno])
 
-AC_CHECK_FUNC(vis, found_vis=yes, found_vis=no)
-if test "x$found_vis" = xyes; then
-	AC_DEFINE(HAVE_VIS)
-fi
+case $host_os in
+	*netbsd*)
+		# NetBSD vis SIGSEGV's
+		found_vis=no
+		;;
+	*)
+		AC_CHECK_FUNC(vis, found_vis=yes, found_vis=no)
+		if test "x$found_vis" = xyes; then
+			AC_DEFINE(HAVE_VIS)
+		fi
+		;;
+esac
 AM_CONDITIONAL(NO_VIS, [test "x$found_vis" = xno])
 
 if test "x$found_prctl" = xyes; then

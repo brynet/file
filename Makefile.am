@@ -4,7 +4,7 @@ bin_PROGRAMS = file
 #CLEANFILES =
 
 #CPPFLAGS +=
-CFLAGS += -D_GNU_SOURCE -D_BSD_SOURCE -std=gnu99
+CFLAGS += -D_BSD_SOURCE -std=gnu99
 CFLAGS += -fstack-protector-all
 if IS_PIE
 CFLAGS += -fPIE
