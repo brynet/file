@@ -163,19 +163,45 @@ if test "x$found_recallocarray" = xyes; then
 fi
 AM_CONDITIONAL(NO_RECALLOCARRAY, [test "x$found_recallocarray" = xno])
 
-case $host_os in
-	*netbsd*)
-		# NetBSD vis SIGSEGV's
-		found_vis=no
-		;;
-	*)
-		AC_CHECK_FUNC(vis, found_vis=yes, found_vis=no)
-		if test "x$found_vis" = xyes; then
-			AC_DEFINE(HAVE_VIS)
-		fi
-		;;
-esac
-AM_CONDITIONAL(NO_VIS, [test "x$found_vis" = xno])
+AC_CHECK_FUNC(strnvis, found_strnvis=yes, found_strnvis=no)
+dnl NetBSD added an strnvis and unfortunately made it incompatible with the
+dnl existing one in OpenBSD and Linux's libbsd (the former having existed
+dnl for over ten years). Despite this incompatibility being reported during
+dnl development (see http://gnats.netbsd.org/44977) they still shipped it.
+dnl Even more unfortunately FreeBSD and later MacOS picked up this incompatible
+dnl implementation.  Try to detect this mess, and assume the only safe option
+dnl if we're cross compiling.
+dnl
+dnl OpenBSD, 2001: strnvis(char *dst, const char *src, size_t dlen, int flag);
+dnl NetBSD: 2012,  strnvis(char *dst, size_t dlen, const char *src, int flag);
+if test "x$found_strnvis" = "xyes"; then
+ AC_MSG_CHECKING([for working strnvis])
+ AC_RUN_IFELSE(
+  [AC_LANG_PROGRAM([[
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <vis.h>
+static void sighandler(int sig) { _exit(1); }
+  ]], [[
+ char dst[16];
+
+ signal(SIGSEGV, sighandler);
+ if (strnvis(dst, "src", 4, 0) && strcmp(dst, "src") == 0)
+  exit(0);
+ exit(1)
+  ]])],
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])
+   found_strnvis="no" ],
+ [AC_MSG_WARN([cross compiling: assuming broken])
+   found_strnvis="no" ]
+ )
+ if test "x$found_strnvis" = xyes; then
+	AC_DEFINE(HAVE_VIS)
+ fi
+fi
+AM_CONDITIONAL(NO_VIS, [test "x$found_strnvis" = xno])
 
 if test "x$found_prctl" = xyes; then
 	AC_CHECK_FUNC(prctl, found_prctl=yes, found_prctl=no)
