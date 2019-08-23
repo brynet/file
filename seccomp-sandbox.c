@@ -26,13 +26,14 @@
 
 #include <sys/resource.h>
 #include <sys/prctl.h>
-#include <sys/syscall.h>
+#include <sys/mman.h>
 
 #include <linux/audit.h>
 #include <linux/filter.h>
 #include <linux/seccomp.h>
 
 #include <stddef.h> /* offsetof */
+#include <stdint.h>
 
 /* XXX: */
 #ifndef SECCOMP_AUDIT_ARCH
@@ -45,6 +46,16 @@
 #endif
 #endif /* SECCOMP_AUDIT_ARCH */
 
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+# define ARG_LO_OFFSET  0
+# define ARG_HI_OFFSET  sizeof(uint32_t)
+#elif __BYTE_ORDER == __BIG_ENDIAN
+# define ARG_LO_OFFSET  sizeof(uint32_t)
+# define ARG_HI_OFFSET  0
+#else
+#error "Unknown endianness"
+#endif
+
 /* Simple helpers to avoid manual errors (but larger BPF programs). */
 #define SC_DENY(_nr, _errno) \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 1), \
@@ -52,6 +63,25 @@
 #define SC_ALLOW(_nr) \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 1), \
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
+/* #define SC_ALLOW_ARG(_nr, _arg_nr, _arg_val) */
+/* Allow if syscall argument contains only values in mask */
+#define SC_ALLOW_ARG_MASK(_nr, _arg_nr, _arg_mask) \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 8), \
+	/* load, mask and test syscall argument, low word */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, args[(_arg_nr)]) + ARG_LO_OFFSET), \
+	BPF_STMT(BPF_ALU+BPF_AND+BPF_K, ~((_arg_mask) & 0xFFFFFFFF)), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0, 0, 4), \
+	/* load, mask and test syscall argument, high word */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, args[(_arg_nr)]) + ARG_HI_OFFSET), \
+	BPF_STMT(BPF_ALU+BPF_AND+BPF_K, \
+	    ~(((uint32_t)((uint64_t)(_arg_mask) >> 32)) & 0xFFFFFFFF)), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0, 0, 1), \
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW), \
+	/* reload syscall number; all rules expect it in accumulator */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, nr))
 
 #include <errno.h>
 #include <err.h>
@@ -74,14 +104,6 @@ static const struct sock_filter filt_insns[] = {
 #ifdef __NR_openat
 	SC_DENY(__NR_openat, EACCES),
 #endif
-	/*
-	 * Newer glibc versions do ioctl(.., TCGETS) internally.
-	 * OpenBSD 5.8 replaced isatty(3) with a fcntl(2) implementation
-	 * to avoid ioctl(2) calls for libc stdio.
-	 */
-#ifdef __NR_ioctl
-	SC_DENY(__NR_ioctl, ENOTTY),
-#endif
 
 	/* Syscalls to permit. */
 #ifdef __NR_brk
@@ -103,10 +125,13 @@ static const struct sock_filter filt_insns[] = {
 	SC_ALLOW(__NR_getpid),
 #endif
 #ifdef __NR_mmap
-	SC_ALLOW(__NR_mmap),
+	SC_ALLOW_ARG_MASK(__NR_mmap, 2, PROT_READ|PROT_WRITE|PROT_NONE),
 #endif
 #ifdef __NR_mmap2
-	SC_ALLOW(__NR_mmap2),
+	SC_ALLOW_ARG_MASK(__NR_mmap2, 2, PROT_READ|PROT_WRITE|PROT_NONE),
+#endif
+#ifdef __NR_mprotect
+	SC_ALLOW_ARG_MASK(__NR_mprotect, 2, PROT_READ|PROT_WRITE|PROT_NONE),
 #endif
 #ifdef __NR_munmap
 	SC_ALLOW(__NR_munmap),
