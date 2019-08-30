@@ -28,6 +28,7 @@
 #include <sys/prctl.h>
 #include <sys/mman.h>
 
+#include <linux/net.h> /* SYS_RECVMSG/SYS_SENDMSG socketcall(2) */
 #include <linux/audit.h>
 #include <linux/filter.h>
 #include <linux/seccomp.h>
@@ -46,6 +47,16 @@
 #endif
 #endif /* SECCOMP_AUDIT_ARCH */
 
+#ifdef DEBUG
+#define SECCOMP_FILTER_FAIL SECCOMP_RET_TRAP
+#else
+#ifdef SECCOMP_RET_KILL_PROCESS
+#define SECCOMP_FILTER_FAIL SECCOMP_RET_KILL_PROCESS
+#else
+#define SECCOMP_FILTER_FAIL SECCOMP_RET_KILL
+#endif
+#endif /* DEBUG */
+
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 # define ARG_LO_OFFSET  0
 # define ARG_HI_OFFSET  sizeof(uint32_t)
@@ -63,7 +74,22 @@
 #define SC_ALLOW(_nr) \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 1), \
 	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW)
-/* #define SC_ALLOW_ARG(_nr, _arg_nr, _arg_val) */
+#define SC_ALLOW_ARG(_nr, _arg_nr, _arg_val) \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 6), \
+	/* load and test syscall argument, low word */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, args[(_arg_nr)]) + ARG_LO_OFFSET), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, \
+	    ((_arg_val) & 0xFFFFFFFF), 0, 3), \
+	/* load and test syscall argument, high word */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, args[(_arg_nr)]) + ARG_HI_OFFSET), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, \
+	    (((uint32_t)((uint64_t)(_arg_val) >> 32)) & 0xFFFFFFFF), 0, 1), \
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ALLOW), \
+	/* reload syscall number; all rules expect it in accumulator */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, nr))
 /* Allow if syscall argument contains only values in mask */
 #define SC_ALLOW_ARG_MASK(_nr, _arg_nr, _arg_mask) \
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 8), \
@@ -92,7 +118,7 @@ static const struct sock_filter filt_insns[] = {
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, arch)),
 	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, SECCOMP_AUDIT_ARCH, 1, 0),
-	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_KILL),
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
 	/* Load the syscall number for checking. */
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS,
 		offsetof(struct seccomp_data, nr)),
@@ -145,6 +171,11 @@ static const struct sock_filter filt_insns[] = {
 #ifdef __NR_sendmsg
 	SC_ALLOW(__NR_sendmsg),
 #endif
+/* Linux Multilib 32-on-64 binary nonsense */
+#ifdef __NR_socketcall
+	SC_ALLOW_ARG_MASK(__NR_socketcall, 0, SYS_RECVMSG),
+	SC_ALLOW_ARG_MASK(__NR_socketcall, 0, SYS_SENDMSG),
+#endif
 #ifdef __NR_wait
 	SC_ALLOW(__NR_wait),
 #endif
@@ -153,7 +184,7 @@ static const struct sock_filter filt_insns[] = {
 #endif
 
 	/* Default deny. */
-	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_KILL),
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_FILTER_FAIL),
 };
 
 static const struct sock_fprog filt_program = {
