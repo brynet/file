@@ -173,8 +173,8 @@ static const struct sock_filter filt_insns[] = {
 #endif
 /* Linux Multilib 32-on-64 binary nonsense */
 #ifdef __NR_socketcall
-	SC_ALLOW_ARG_MASK(__NR_socketcall, 0, SYS_RECVMSG),
-	SC_ALLOW_ARG_MASK(__NR_socketcall, 0, SYS_SENDMSG),
+	SC_ALLOW_ARG(__NR_socketcall, 0, SYS_RECVMSG),
+	SC_ALLOW_ARG(__NR_socketcall, 0, SYS_SENDMSG),
 #endif
 #ifdef __NR_wait
 	SC_ALLOW(__NR_wait),
