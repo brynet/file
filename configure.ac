@@ -156,21 +156,16 @@ if test "x$found_reallocarray" = "xyes"; then
  AC_MSG_CHECKING([for working reallocarray])
  AC_RUN_IFELSE(
   [AC_LANG_PROGRAM([[
-#include <signal.h>
 #include <stdlib.h>
-#include <unistd.h>
-static void sighandler(int sig) { _exit(0); }
+#include <assert.h>
   ]], [[
- char *ptr = reallocarray(NULL, 0, 0);
-
- signal(SIGSEGV, sighandler);
- if (ptr != NULL)
-   *ptr = 'F'; /* crash */
- else if (ptr == NULL)
+ char *ptr, *nptr;
+ ptr = reallocarray(NULL, 1, sizeof(char));
+ assert(ptr != NULL);
+ nptr = reallocarray(ptr, 0, 0);
+ if (nptr == NULL)
    exit(1);
- if (*ptr == 'F') /* crash */
-  exit(1);
- exit(1);
+ exit(0);
   ]])],
   [AC_MSG_RESULT([yes])],
   [AC_MSG_RESULT([no])

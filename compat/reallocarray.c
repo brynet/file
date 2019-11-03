@@ -42,13 +42,13 @@ reallocarray(void *optr, size_t nmemb, size_t size)
 	/*
 	 * realloc(3), and thus reallocarray, are broken on Linux,
 	 * it has also regressed on FreeBSD and NetBSD. We cannot trust
-	 * them to do the right thing.
+	 * them to do the right thing. They might free the previous
+	 * allocation and return NULL, leading to double-free bugs.
 	 */
 	if (nmemb == 0 || size == 0) {
-		void *prot_ptr = malloc(0);
-		assert(prot_ptr != NULL);
-		/* We assume correct malloc(0) behaviour here. */
-		return prot_ptr;
+		void *zptr = malloc(0);
+		assert(zptr != NULL);
+		return ptr;
 	}
 #endif
 	return realloc(optr, size * nmemb);
