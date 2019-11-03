@@ -48,7 +48,7 @@ reallocarray(void *optr, size_t nmemb, size_t size)
 	if (nmemb == 0 || size == 0) {
 		void *zptr = malloc(0);
 		assert(zptr != NULL);
-		return ptr;
+		return zptr;
 	}
 #endif
 	return realloc(optr, size * nmemb);
