@@ -152,8 +152,35 @@ fi
 AM_CONDITIONAL(NO_SETREUID, [test "x$found_setreuid" = xno])
 
 AC_CHECK_FUNC(reallocarray, found_reallocarray=yes, found_reallocarray=no)
-if test "x$found_reallocarray" = xyes; then
+if test "x$found_reallocarray" = "xyes"; then
+ AC_MSG_CHECKING([for working reallocarray])
+ AC_RUN_IFELSE(
+  [AC_LANG_PROGRAM([[
+#include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+static void sighandler(int sig) { _exit(0); }
+  ]], [[
+ char *ptr = reallocarray(NULL, 0, 0);
+
+ signal(SIGSEGV, sighandler);
+ if (ptr != NULL)
+   *ptr = 'F'; /* crash */
+ else if (ptr == NULL)
+   exit(1);
+ if (*ptr == 'F') /* crash */
+  exit(1);
+ exit(1);
+  ]])],
+  [AC_MSG_RESULT([yes])],
+  [AC_MSG_RESULT([no])
+   found_reallocarray="no" ],
+ [AC_MSG_WARN([cross compiling: assuming broken])
+   found_reallocarray="no" ]
+ )
+ if test "x$found_reallocarray" = xyes; then
 	AC_DEFINE(HAVE_REALLOCARRAY)
+ fi
 fi
 AM_CONDITIONAL(NO_REALLOCARRAY, [test "x$found_reallocarray" = xno])
 
@@ -181,6 +208,7 @@ if test "x$found_strnvis" = "xyes"; then
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include <vis.h>
 static void sighandler(int sig) { _exit(1); }
   ]], [[

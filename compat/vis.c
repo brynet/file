@@ -220,7 +220,7 @@ stravis(char **outp, const char *src, int flag)
 		return -1;
 	len = strvis(buf, src, flag);
 	serrno = errno;
-	*outp = realloc(buf, len + 1);
+	*outp = reallocarray(buf, 1, len + 1);
 	if (*outp == NULL) {
 		*outp = buf;
 		errno = serrno;
