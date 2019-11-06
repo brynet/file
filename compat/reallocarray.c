@@ -20,8 +20,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include <assert.h>
-
 #include "magic.h"
 
 /*
@@ -45,11 +43,8 @@ reallocarray(void *optr, size_t nmemb, size_t size)
 	 * them to do the right thing. They might free the previous
 	 * allocation and return NULL, leading to double-free bugs.
 	 */
-	if (nmemb == 0 || size == 0) {
-		void *zptr = malloc(0);
-		assert(zptr != NULL);
-		return zptr;
-	}
+	if (nmemb == 0 || size == 0)
+		return malloc(0);
 #endif
 	return realloc(optr, size * nmemb);
 }
