@@ -36,6 +36,8 @@
 #include <stddef.h> /* offsetof */
 #include <stdint.h>
 
+#include "file.h"
+
 /* XXX: */
 #ifndef SECCOMP_AUDIT_ARCH
 #if defined __arm__
