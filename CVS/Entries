@@ -4,11 +4,11 @@ D/magdir////
 /file.1/1.44/Thu Dec 24 14:57:59 2015//
 /magic-dump.c/1.2/Tue May 10 11:47:27 2016//
 /text.c/1.3/Tue Apr 18 14:46:31 2017//
-/magic.5/1.18/Wed Sep 20 13:19:49 2017//
 /Makefile/1.18/Thu Dec 13 01:00:48 2018//
 /file.h/1.30/Thu Dec 13 01:00:48 2018//
-/magic-load.c/1.26/Thu Dec 13 01:00:48 2018//
 /magic.h/1.15/Thu Dec 13 01:00:48 2018//
 /magic-test.c/1.27/Result of merge//
 /file.c/1.69/Result of merge//
 /xmalloc.c/1.4/Result of merge//
+/magic-load.c/1.26/Wed Nov 27 21:59:55 2019//
+/magic.5/1.19/Sun Jan 24 00:30:51 2021//
