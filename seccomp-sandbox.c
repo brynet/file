@@ -132,6 +132,12 @@ static const struct sock_filter filt_insns[] = {
 #ifdef __NR_openat
 	SC_DENY(__NR_openat, EACCES),
 #endif
+#ifdef __NR_newfstatat
+	SC_DENY(__NR_newfstatat, EACCES),
+#endif
+#ifdef __NR_statx
+	SC_DENY(__NR_statx, EACCES),
+#endif
 
 	/* Syscalls to permit. */
 #ifdef __NR_brk
