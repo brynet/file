@@ -56,6 +56,10 @@
 
 #endif /* ! __APPLE__ */
 
+#ifndef REG_STARTEND /* musl doesn't define this */
+#define REG_STARTEND (1 << 2) /* from glibc */
+#endif
+
 #ifndef HAVE_EXPLICIT_BZERO
 void explicit_bzero(void *_buf, size_t _len);
 #endif
