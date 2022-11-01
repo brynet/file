@@ -43,8 +43,16 @@ reallocarray(void *optr, size_t nmemb, size_t size)
 	 * them to do the right thing. They might free the previous
 	 * allocation and return NULL, leading to double-free bugs.
 	 */
-	if (nmemb == 0 || size == 0)
-		return malloc(0);
+	if (nmemb == 0 || size == 0) {
+		/*
+		 * If allocation of zero-sized object is successful,
+		 * free previous allocation.
+		 */
+		void *zptr = malloc(0);
+		if (zptr)
+			free(optr);
+		return zptr;
+	}
 #endif
 	return realloc(optr, size * nmemb);
 }
