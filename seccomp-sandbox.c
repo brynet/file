@@ -36,6 +36,9 @@
 #include <stddef.h> /* offsetof */
 #include <stdint.h>
 
+#include <errno.h>
+#include <err.h>
+
 #include "file.h"
 
 /* XXX: */
@@ -110,9 +113,33 @@
 	/* reload syscall number; all rules expect it in accumulator */ \
 	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
 	    offsetof(struct seccomp_data, nr))
+/* Deny unless syscall argument contains only values in mask */
+#define SC_DENY_UNLESS_ARG_MASK(_nr, _arg_nr, _arg_mask, _errno) \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, (_nr), 0, 8), \
+	/* load, mask and test syscall argument, low word */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, args[(_arg_nr)]) + ARG_LO_OFFSET), \
+	BPF_STMT(BPF_ALU+BPF_AND+BPF_K, ~((_arg_mask) & 0xFFFFFFFF)), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0, 0, 3), \
+	/* load, mask and test syscall argument, high word */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+	    offsetof(struct seccomp_data, args[(_arg_nr)]) + ARG_HI_OFFSET), \
+	BPF_STMT(BPF_ALU+BPF_AND+BPF_K, \
+	    ~(((uint32_t)((uint64_t)(_arg_mask) >> 32)) & 0xFFFFFFFF)), \
+	BPF_JUMP(BPF_JMP+BPF_JEQ+BPF_K, 0, 1, 0), \
+	BPF_STMT(BPF_RET+BPF_K, SECCOMP_RET_ERRNO|(_errno)), \
+	/* reload syscall number; all rules expect it in accumulator */ \
+	BPF_STMT(BPF_LD+BPF_W+BPF_ABS, \
+		offsetof(struct seccomp_data, nr))
+#define SC_DENY_UNLESS_MASK(_nr, _arg_nr, _arg_val, _errno) \
 
-#include <errno.h>
-#include <err.h>
+#if defined(__NR_mmap) || defined(__NR_mmap2)
+# ifdef MAP_FIXED_NOREPLACE
+#  define SC_MMAP_FLAGS MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED|MAP_FIXED_NOREPLACE
+# else
+#  define SC_MMAP_FLAGS MAP_PRIVATE|MAP_ANONYMOUS|MAP_FIXED
+# endif /* MAP_FIXED_NOREPLACE */
+#endif /* __NR_mmap || __NR_mmap2 */
 
 /* Syscall filtering set */
 static const struct sock_filter filt_insns[] = {
@@ -159,9 +186,11 @@ static const struct sock_filter filt_insns[] = {
 	SC_ALLOW(__NR_getpid),
 #endif
 #ifdef __NR_mmap
+	SC_DENY_UNLESS_ARG_MASK(__NR_mmap, 3, SC_MMAP_FLAGS, EINVAL),
 	SC_ALLOW_ARG_MASK(__NR_mmap, 2, PROT_READ|PROT_WRITE|PROT_NONE),
 #endif
 #ifdef __NR_mmap2
+	SC_DENY_UNLESS_ARG_MASK(__NR_mmap2, 3, SC_MMAP_FLAGS, EINVAL),
 	SC_ALLOW_ARG_MASK(__NR_mmap2, 2, PROT_READ|PROT_WRITE|PROT_NONE),
 #endif
 #ifdef __NR_mprotect
