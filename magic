@@ -3704,7 +3704,7 @@
 >12	belong		1003			HCI BCSP
 >12	belong		1004			HCI Serial (H5)
 >>12	belong		x			type %d
-#	$OpenBSD: c-lang,v 1.5 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: c-lang,v 1.6 2022/12/26 19:16:01 jmc Exp $
 
 #------------------------------------------------------------------------------
 # c-lang:  file(1) magic for C programs (or REXX)
@@ -3728,7 +3728,7 @@
 >7	string		x		version %.2s
 # We skip the path here, because it is often long (so file will
 # truncate it) and mostly redundant.
-# The inverted index functionality was added some time betwen
+# The inverted index functionality was added some time between
 # versions 11 and 15, so look for -q if version is above 14:
 >7	string		>14
 >>10	search/100	\ -q\ 		with inverted index
@@ -5673,7 +5673,7 @@
 0       string          FCS2.0          Flow Cytometry Standard (FCS) data, version 2.0
 0       string          FCS3.0          Flow Cytometry Standard (FCS) data, version 3.0
 
-#	$OpenBSD: filesystems,v 1.5 2009/12/23 02:24:39 krw Exp $
+#	$OpenBSD: filesystems,v 1.6 2022/12/26 19:16:01 jmc Exp $
 
 #------------------------------------------------------------------------------
 # filesystems:  file(1) magic for different filesystems
@@ -5810,7 +5810,7 @@
 # updated by Joerg Jenderek
 # variables according to grub-0.97/stage1/stage1.S or
 # http://www.gnu.org/software/grub/manual/grub.html#Embedded-data
-# usual values are marked with comments to get only informations of strange GRUB loaders
+# usual values are marked with comments to get only information of strange GRUB loaders
 >0		ulelong		0x009048EB	
 >>0x41		ubyte		<2		
 >>>0x3E		ubyte		>2		\b; GRand Unified Bootloader
@@ -5838,7 +5838,7 @@
 >>>>>379	string	GRUB\ \0		\b, GRUB version 0.95 or 0.96
 >>>>391		string	Geom\0Hard\ Disk\0Read\0\ Error\0
 >>>>>385	string	GRUB\ \0		\b, GRUB version 0.97
-#unkown version
+#unknown version
 >>>343		string	Geom\0Read\0\ Error\0	
 >>>>321		string	Loading\ stage1.5	\b, GRUB version x.y
 >>>380		string	Geom\0Hard\ Disk\0Read\0\ Error\0
@@ -6411,7 +6411,7 @@
 # maximal short forward jump is 07fx
 >1		ubyte			<0xff	\b, code offset 0x%x
 # mtools-3.9.8/msdos.h
-# usual values are marked with comments to get only informations of strange FAT systems
+# usual values are marked with comments to get only information of strange FAT systems
 # valid sectorsize must be a power of 2 from 32 to 32768
 >>11		uleshort&0x000f	x		
 >>>11		uleshort	<32769		
@@ -6534,7 +6534,7 @@
 # In the second sector (+0x200) are variables according to grub-0.97/stage2/asm.S or
 # grub-1.94/kern/i386/pc/startup.S
 # http://www.gnu.org/software/grub/manual/grub.html#Embedded-data
-# usual values are marked with comments to get only informations of strange GRUB loaders
+# usual values are marked with comments to get only information of strange GRUB loaders
 0x200	uleshort		0x70EA		
 # found only version 3.{1,2}
 >0x206		ubeshort	>0x0300		
@@ -9038,7 +9038,7 @@
 >0	regex	dey\n[0-9][0-9][0-9]\0	Dalvik dex file (optimized for host)
 >4	string	>000			version %s
 
-#	$OpenBSD: jpeg,v 1.4 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: jpeg,v 1.5 2022/12/26 19:16:01 jmc Exp $
 
 #------------------------------------------------------------------------------
 # JPEG images
@@ -9161,7 +9161,7 @@
 >>>>>(150.L+61)	byte	!0x30		\b%c
 # Here things get sticky.  We can do ONE MORE marker segment with
 # indirect addressing, and that's all.  It would be great if we could
-# do pointer arithemetic like in an assembler language.  Christos?
+# do pointer arithmetic like in an assembler language.  Christos?
 # And if there was some sort of looping construct to do searches, plus a few
 # named accumulators, it would be even more effective...
 # At least we can show a comment if no other segments got inserted before:
@@ -10187,7 +10187,7 @@
 # From:	Josh Triplett <josh@freedesktop.org>
 
 0	string	.MCAD\t		Mathcad document
-#	$OpenBSD: mathematica,v 1.3 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: mathematica,v 1.4 2022/12/26 19:16:01 jmc Exp $
 
 #------------------------------------------------------------------------------
 # mathematica:  file(1) magic for mathematica files
@@ -10200,7 +10200,7 @@
 0	string	\064\024\011\000\035\000\000\000	Mathematica version 2 notebook
 
 # .ma
-# multiple possibilites:
+# multiple possibilities:
 
 0	string	(*^\n\n::[\011frontEndVersion\ =\ 	Mathematica notebook
 #>41	string	>\0	%s
@@ -10210,7 +10210,7 @@
 #0	string	(*^\n\n::[\011Information	Mathematica notebook version 2.x
 #>675	string	>\0	%s #doesn't work well
 
-# there may be 'cr' instread of 'nl' in some does this matter?
+# there may be 'cr' instead of 'nl' in some does this matter?
 
 # generic:
 0	string	(*^\r\r::[\011	Mathematica notebook version 2.x
@@ -10676,7 +10676,7 @@
 # From:	Josh Triplett <josh@freedesktop.org>
 
 0	string	XPCOM\nMozFASL\r\n\x1A		Mozilla XUL fastload data
-#	$OpenBSD: msdos,v 1.7 2018/10/04 16:51:38 ccardenas Exp $
+#	$OpenBSD: msdos,v 1.8 2022/12/26 19:16:01 jmc Exp $
 
 #------------------------------------------------------------------------------
 # msdos:  file(1) magic for MS-DOS files
@@ -10722,7 +10722,7 @@
 # probably some linker directive to set it.  The linker version was
 # 3.0, except for one ".exe" which had it as 4.20 (same damn linker!).
 #
-# many of the compressed formats were extraced from IDARC 1.23 source code
+# many of the compressed formats were extracted from IDARC 1.23 source code
 #
 0	string	MZ		MS-DOS executable
 !:mime	application/x-dosexec
@@ -10882,7 +10882,7 @@
 >>>&1		string		x for DOS, Win or OS/2, emx %s
 >>&(&0x42.l-3)	byte		x 
 >>>&0x26	string		UPX \b, UPX compressed
-# and yet another guess: small .text, and after large .data is unusal, could be 32lite
+# and yet another guess: small .text, and after large .data is unusual, could be 32lite
 >>&0x2c		search/0xa0	.text
 >>>&0x0b	lelong		<0x2000
 >>>>&0		lelong		>0x6000 \b, 32lite compressed
@@ -13270,7 +13270,7 @@
 >32	string	>\0	version %s scene
 8	string	CIMG		Alias Maya Image File
 8	string	DEEP		Alias Maya Image File
-#	$OpenBSD: sgml,v 1.5 2009/04/24 18:54:34 chl Exp $
+#	$OpenBSD: sgml,v 1.6 2022/12/26 19:16:01 jmc Exp $
 
 #------------------------------------------------------------------------------
 # Type:	SVG Vectorial Graphics
@@ -13286,7 +13286,7 @@
 # sgml:  file(1) magic for Standard Generalized Markup Language
 # HyperText Markup Language (HTML) is an SGML document type,
 # from Daniel Quinlan (quinlan@yggdrasil.com)
-# adapted to string extenstions by Anthon van der Neut <anthon@mnt.org)
+# adapted to string extensions by Anthon van der Neut <anthon@mnt.org)
 0	search/1/cB	\<!DOCTYPE\ html	HTML document text
 !:mime	text/html
 0	search/1/cb	\<head			HTML document text
