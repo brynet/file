@@ -179,12 +179,6 @@ if test "x$found_reallocarray" = "xyes"; then
 fi
 AM_CONDITIONAL(NO_REALLOCARRAY, [test "x$found_reallocarray" = xno])
 
-AC_CHECK_FUNC(recallocarray, found_recallocarray=yes, found_recallocarray=no)
-if test "x$found_recallocarray" = xyes; then
-	AC_DEFINE(HAVE_RECALLOCARRAY)
-fi
-AM_CONDITIONAL(NO_RECALLOCARRAY, [test "x$found_recallocarray" = xno])
-
 AC_CHECK_FUNC(strnvis, found_strnvis=yes, found_strnvis=no)
 dnl NetBSD added an strnvis and unfortunately made it incompatible with the
 dnl existing one in OpenBSD and Linux's libbsd (the former having existed

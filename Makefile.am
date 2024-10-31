@@ -62,9 +62,6 @@ endif
 if NO_IMSG
 nodist_file_SOURCES += compat/imsg-buffer.c compat/imsg.c
 endif
-if NO_RECALLOCARRAY
-nodist_file_SOURCES += compat/recallocarray.c
-endif
 if NO_REALLOCARRAY
 nodist_file_SOURCES += compat/reallocarray.c
 endif

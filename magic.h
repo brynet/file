@@ -62,10 +62,6 @@ void explicit_bzero(void *_buf, size_t _len);
 #ifndef HAVE_FREEZERO
 void freezero(void *_ptr, size_t _size);
 #endif
-#ifndef HAVE_RECALLOCARRAY
-void *recallocarray(void *_ptr, size_t _oldnmemb, size_t _newnmemb,
-    size_t _size);
-#endif
 #ifndef HAVE_REALLOCARRAY
 void *reallocarray(void *_ptr, size_t _nmemb, size_t _size);
 #endif
