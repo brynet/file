@@ -1,7 +1,7 @@
 # $Id$
 
-AC_INIT(file, 6.6)
-RELEASE=6.6
+AC_INIT([file],[7.6])
+RELEASE=7.6
 AC_SUBST(RELEASE)
 
 AC_CONFIG_AUX_DIR(etc)
@@ -234,4 +234,5 @@ if test "x$found_pledge" = xno; then
 	CPPFLAGS="$CPPFLAGS -D\"pledge(promises,paths)=0\""
 fi
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
